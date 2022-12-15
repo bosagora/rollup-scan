@@ -1,0 +1,48 @@
+@import "/src/index";
+#app {
+  margin-top: 40px;
+}
+
+#progressInput {
+  margin: 20px auto;
+  width: 30%;
+}
+.circle-background,
+.circle-progress1 {
+  fill: none;
+  stroke: $green-text;
+}
+.circle-progress3 {
+  fill: none;
+  stroke: $no-text;
+}
+.circle-progress4 {
+  fill: none;
+  stroke: $yellow-text;
+}
+.circle-progress5 {
+  fill: none;
+  stroke: $mehroon-text;
+}
+
+.circle-background {
+  stroke: #ddd;
+}
+
+// .circle-progress {
+//   stroke: #50bd60;
+//   stroke-linecap: round;
+//   stroke-linejoin: round;
+// }
+
+.circle-value {
+  font-size: 16px;
+  font-weight: 600;
+  fill: #50bd60;
+}
+.circle-text {
+  font-size: 10px;
+  font-weight: 400;
+  fill: #50bd60;
+}
+
