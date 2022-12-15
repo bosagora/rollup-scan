@@ -1,0 +1,57 @@
+// Table Component Styles
+@import "/src/index";
+table {
+  display: grid;
+  width: 100%;
+  thead {
+    width: 100%;
+  }
+  tbody {
+    display: block;
+    margin: 0 0 1rem;
+    min-height: 23.75rem;
+    width: 100%;
+    tr:hover {
+      // background-color: #f4f4f873;
+      clear: both;
+    }
+  }
+  tr {
+    align-items: center;
+    // border-bottom: 1px solid #e0e0e6;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
+  th {
+    // color: $secondary-color;
+    font-size: 12px;
+  }
+  td {
+    font-size: 0.875rem;
+  }
+  th,
+  td {
+    font-weight: 400;
+    padding: 0.8rem 0.25rem;
+  }
+  .no-data {
+    border: none;
+    position: absolute;
+    td:last-child,
+    .w-100 {
+      padding: 0 !important;
+      max-width: 300px;
+      text-align: center !important;
+      width: 100% !important;
+      h4 {
+        width: 100%;
+      }
+    }
+  }
+  @media (max-width: 767px) {
+    td {
+      font-size: 0.75rem;
+    }
+  }
+}

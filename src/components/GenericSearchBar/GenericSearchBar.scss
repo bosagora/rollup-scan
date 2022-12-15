@@ -1,0 +1,68 @@
+@import "/src/index";
+#generic-search-bar {
+    width: 100%;
+    .input-group {
+        border-radius: 0.25rem;
+    }
+    .form-control {
+        border: none;
+        font-size: 14px;
+        height: calc(2em + 0.75rem + 6px);
+    }
+    input {
+        &:focus {
+            box-shadow: none;
+            outline: none;
+        }
+    }
+    .btn {
+        align-items: center;
+        // background-color: #e0e0e6;
+        border: none;
+        border-top-right-radius: 0.25rem;
+        border-bottom-right-radius: 0.25rem;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        // color: #124d9a;
+        display: flex;
+        height: 46px;
+        justify-content: center;
+        width: 46px;
+        &:focus {
+            box-shadow: none;
+            outline: none;
+        }
+        svg {
+            // color: #124d9a;
+            height: 1.5em;
+            width: 1.5em;
+        }
+    }
+    @media (max-width: 480px) {
+        .input-group {
+            padding: 2.5px;
+        }
+        .form-control {
+            font-size: 12px;
+            height: calc(2em + 0.75rem + 0px);
+        } 
+        .btn {
+            height: 36px;
+            width: 40px;
+            svg {
+                height: 1em;
+                width: 1em;
+            }
+        }
+    }
+}
+
+.errorBox {
+    position: relative;
+    margin-top: 5px;
+    p {
+        position: absolute;
+        color: red;
+        left: 5px;
+    }
+}
