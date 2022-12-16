@@ -365,31 +365,3 @@ export function allBoaStatsforDashboard(): ThunkAction<
     }
   };
 }
-
-//details of all block transactions
-export function coinMarketCap(
-  lang: string
-): ThunkAction<Promise<any>, AppState, undefined, AppAction> {
-  return async (dispatch) => {
-    const req = await request(
-      "GET",
-      `${endpoints.coinMarketCap}?currency=${
-        lang === "korean" ? "krw" : lang === "chinese" ? "cny" : "usd"
-      }`,
-      {}
-    )
-      .then((res: any) => {
-        dispatch(marketCapStats(res.data));
-        return res;
-      })
-      .catch((err: any) => {
-        return err;
-      });
-
-    try {
-      return { req };
-    } catch (err) {
-      // throw err;
-    }
-  };
-}

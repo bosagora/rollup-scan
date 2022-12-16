@@ -1,6 +1,6 @@
 import Loader from "../Loader/Loader";
 import { RouterPathEnum } from "../../global/routes/RouterPathEnum";
-import { getPretty } from "../../global/utils/CalcUtils";
+import { getPretty, hashPretty } from "../../global/utils/CalcUtils";
 import { Link, useNavigate } from "react-router-dom";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -35,8 +35,8 @@ const BlocksBox: React.FC<BlockProps> = (props: BlockProps) => {
           <thead>
             <tr>
               <th>{t("Height")}</th>
+              <th>{t("Block_Hash")}</th>
               <th>{t("Timestamp")}</th>
-              <th>{t("Transactions")}</th>
             </tr>
           </thead>
           <tbody>
@@ -54,7 +54,7 @@ const BlocksBox: React.FC<BlockProps> = (props: BlockProps) => {
               </tr>
             ) : (
               <>
-                {data.slice(0, 10).map((item: any, index: number) => (
+                {data.map((item: any, index: number) => (
                   <tr key={index}>
                     <td>
                       <div
@@ -68,25 +68,13 @@ const BlocksBox: React.FC<BlockProps> = (props: BlockProps) => {
                         {getPretty(item.height)}
                       </div>
                     </td>
+                    <td>{hashPretty(item.curBlock)}</td>
                     <td>
                       {moment
-                        .utc(item.time_stamp * 1000)
-                        .fromNow()
-                        .includes("day") ||
-                      moment
-                        .utc(item.time_stamp * 1000)
-                        .fromNow()
-                        .includes("month") ||
-                      moment
-                        .utc(item.time_stamp * 1000)
-                        .fromNow()
-                        .includes("year")
-                        ? moment
-                            .utc(item.time_stamp * 1000)
-                            .format("YYYY-MM-DD HH:mm:ss") + " UTC"
-                        : ""}
+                        .utc(item.timestamp * 1000)
+                        .locale("en")
+                        .fromNow()}
                     </td>
-                    <td>{item.tx_count}</td>
                   </tr>
                 ))}
               </>

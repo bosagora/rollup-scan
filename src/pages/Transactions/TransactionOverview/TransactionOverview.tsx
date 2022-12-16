@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Container, Row, Col } from "reactstrap";
+import { Col, Container, Row } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { coinMarketCap, searchDataUpdater } from "store/header/thunks";
+import { searchDataUpdater } from "store/header/thunks";
 import { GoArrowRight } from "react-icons/go";
 import { RouterPathEnum } from "global/routes/RouterPathEnum";
 import moment from "moment";
@@ -9,8 +9,6 @@ import { useTranslation, withTranslation } from "react-i18next";
 import CopyAddressClipboard from "components/CopyAddressClipboard/CopyAddressClipboard";
 import Loader from "components/Loader/Loader";
 import { Amount } from "global/config/config";
-import request from "../../../global/api/request";
-import endpoints from "../../../global/config/urlconfigs";
 import { getPretty, getPriceOfFee } from "global/utils/CalcUtils";
 import PageHelmet from "../../../components/PageHelmet/PageHelmet";
 import TooltipComp from "../../../components/TooltipComp/TooltipComp";
@@ -35,16 +33,7 @@ const TransactionOverview: React.FC = (props: any) => {
   const marketCapStats: MarketCapStats = useSelector(
     (state: any) => state.header.marketCapStats
   );
-  const { i18n, t } = useTranslation();
-
-  useEffect(() => {
-    dispatch(coinMarketCap(i18n.language));
-  }, [dispatch]);
-
-  useEffect(() => {
-    console.log("");
-    dispatch(coinMarketCap(i18n.language));
-  }, [i18n.language]);
+  const { t } = useTranslation();
 
   const getTransactionData = (hash: string) => {
     // request("GET", `${endpoints.transactionDetails}/${hash}`, {})

@@ -38,9 +38,9 @@ export const AgoraTestnet: Chain = {
     `https://testnet-scan.bosagora.org/tx/${transactionHash}`,
 };
 
-export const getChainConfig = (type: string): Config => {
+export const getChainConfig = (): Config => {
   let config;
-  if (type === "test") {
+  if (process.env.NODE_ENV === "development") {
     config = {
       readOnlyChainId: AgoraTestnet.chainId,
       readOnlyUrls: {

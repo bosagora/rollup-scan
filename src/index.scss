@@ -541,6 +541,7 @@ h2 {
             width: 26px;
           }
           p {
+            font-size: 16px;
             font-weight: 500;
             margin: 0 !important;
           }
@@ -562,7 +563,7 @@ h2 {
           width: 100%;
           h4 {
             // color: $primary-color;
-            font-size: 18px;
+            font-size: 22px;
             font-weight: 500;
             margin: 0 0.5rem 0 0;
           }
@@ -643,7 +644,7 @@ h2 {
     .bt-container {
       display: flex;
       justify-content: space-between;
-      margin: 1.5rem 0 0;
+      margin: 3rem 0 0;
       width: 100%;
       a:hover {
         color: #124d9a;
@@ -704,14 +705,14 @@ h2 {
       }
       .blocks {
         width: 50%;
-        padding: 0 1rem 0 0;
+        padding: 0 1rem;
         table {
           th:first-child {
             width: 15%;
           }
           td:first-child {
-            padding: 0.8rem 2rem 0.8rem 0.5rem;
-            text-align: right;
+            padding: 0.8rem 2rem 0.8rem 0;
+            text-align: left;
             width: 15%;
           }
           th:nth-child(2),
@@ -738,11 +739,12 @@ h2 {
       }
       .transactions {
         width: 50%;
+        padding: 0 1rem;
         table {
           th,
           td {
             text-align: left;
-            width: 19%;
+            width: 25%;
           }
           th:nth-child(3),
           td:nth-child(3) {
@@ -753,7 +755,7 @@ h2 {
           th:last-child,
           td:first-child,
           td:last-child {
-            width: 31%;
+            //width: 31%;
           }
         }
       }

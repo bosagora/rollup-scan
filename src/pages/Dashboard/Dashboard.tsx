@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Card, Col, Container, Row } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
-import height from "assets/images/height.svg";
+import heightIcon from "assets/images/height.svg";
 import transactionIcon from "assets/images/transaction.svg";
 import circulate from "assets/images/circulate.svg";
 import { ReactSVG } from "react-svg";
@@ -13,15 +13,10 @@ import BlocksBox from "../../components/Dashboard/Blocks";
 import TransactionBox from "../../components/Dashboard/TransactionBox";
 import PageHelmet from "../../components/PageHelmet/PageHelmet";
 import SearchBar from "../../components/SearchBar/SearchBar";
-
-import RollupAbi from "global/contracts/abis/RollUp.json";
-import { Contract, utils } from "ethers";
-import { useContractFunction } from "@usedapp/core";
-
-const rollupAddress = process.env.REACT_APP_ROLLUP_CONTRACT_ADDRESS || "";
-console.log(rollupAddress);
-// const rollupInterface = new utils.Interface(RollupAbi.abi);
-// const rollup = new Contract(rollupAddress, rollupInterface);
+import { useByFromHeight, useLastHeight } from "../../hooks/useRollup";
+import request from "../../global/api/request";
+import { Block, Transaction } from "rollup-pm-sdk";
+import { BlockHeader } from "../../global/Types";
 
 const Dashboard: React.FC = () => {
   // states for current screen
@@ -32,38 +27,57 @@ const Dashboard: React.FC = () => {
   const [blockLoading, setBlockLoading] = useState(false);
   const [transactionLoading, setTransactionLoading] = useState(false);
 
-  const [stats, setStats] = useState<any>("0");
-  const [currentTime] = useState(new Date());
-  const [blocksData] = useState<any>([]);
-  const [transactionsData] = useState<any>([]);
-  // const { state, send } = useContractFunction(rollup, "");
+  const [blocksData, setBlocksData] = useState<any>([]);
+  const [transactionsData, setTransactionsData] = useState<Transaction[]>([]);
+
+  const [totalTransaction, setTotalTransaction] = useState<number>();
+  const [blockHeader, setBlockHeader] = useState<BlockHeader>();
+  const [blockTime, setBlockTime] = useState<number>();
+  const { height, heightError } = useLastHeight();
+  const { blocksHeader, blocksHeaderError } = useByFromHeight(height, 10);
 
   useEffect(() => {
-    console.log("DASHBOARD INIT");
+    if (blockHeader && blockHeader?.CID) {
+      request("GET", blockHeader.CID, {})
+        .then((res) => {
+          if (res.status === 200) {
+            const block: Block = res.data as Block;
+            if (block?.txs?.length) {
+              const txs = block.txs;
+              const lastTx: Transaction = txs[txs.length - 1];
+              setTotalTransaction(lastTx?.sequence ?? Number.NaN);
+              const txTen = txs
+                .slice(txs.length > 10 ? -10 : txs.length * -1)
+                .reverse();
+              setTransactionsData(txTen);
+            }
+          }
+        })
+        .catch((e) => {
+          console.log("e", e);
+        });
+    }
+  }, [blockHeader?.height]);
+
+  useEffect(() => {
+    if (blocksHeader && blocksHeader.length > 0) {
+      const reverse = blocksHeader.reverse();
+      setBlockHeader(reverse[0]);
+      setBlocksData(reverse);
+      if (reverse.length >= 2) {
+        const currentTime = reverse[0].timestamp;
+        const prevTime = reverse[1].timestamp;
+        setBlockTime(currentTime - prevTime);
+      }
+    }
+  }, [blocksHeader]);
+
+  useEffect(() => {
     setBlockLoading(false);
     setTransactionLoading(false);
-    setStats({});
   }, [dispatch]);
 
-  const getLatestHeightTime = (time: any) => {
-    let t1 = currentTime;
-    let t2 = new Date(time * 1000);
-    let dif = (t1.getTime() - t2.getTime()) / 1000;
-
-    let d = Math.floor(dif / (3600 * 24));
-    let h = Math.floor((dif % (3600 * 24)) / 3600);
-    let m = Math.floor((dif % 3600) / 60);
-    let s = Math.floor(dif % 60);
-
-    let dDisplay = d > 0 ? d + (d === 1 ? t("Day") : t("Days")) : " ";
-    let hDisplay = h > 0 ? h + (h === 1 ? t("Hour") : t("Hours")) : " ";
-    let mDisplay = m > 0 ? m + (m === 1 ? t("Min") : t("Mins")) : " ";
-    let sDisplay =
-      s > 0 ? s + (s === 1 ? t("Sec") : t("Secs")) : "0" + t("Sec");
-    return (
-      t("Last") + " " + dDisplay + hDisplay + mDisplay + sDisplay + t("Ago")
-    );
-  };
+  useEffect(() => {}, [heightError, blocksHeaderError]);
 
   return (
     <div id="dashboard">
@@ -94,15 +108,15 @@ const Dashboard: React.FC = () => {
               <Card>
                 <div className="head">
                   <div className="title">
-                    <ReactSVG src={height} />
+                    <ReactSVG src={heightIcon} />
                     <p>{t("Block_height")}</p>
                   </div>
                 </div>
                 <div className="values">
-                  <h4>{stats?.height && getPretty(stats.height)}</h4>
-                  <p>
-                    {getLatestHeightTime(stats?.time_stamp && stats.time_stamp)}
-                  </p>
+                  <h4>{Boolean(height) && getPretty(height)}</h4>
+                  {/*<p>*/}
+                  {/*  {getLatestHeightTime(stats?.time_stamp && stats.time_stamp)}*/}
+                  {/*</p>*/}
                 </div>
               </Card>
               <Card>
@@ -113,9 +127,7 @@ const Dashboard: React.FC = () => {
                   </div>
                 </div>
                 <div className="values">
-                  <h4>
-                    {stats?.transactions && getPretty(stats.transactions)}
-                  </h4>
+                  <h4>{totalTransaction && getPretty(totalTransaction)}</h4>
                   <p>{t("Total")}</p>
                 </div>
               </Card>
@@ -127,8 +139,8 @@ const Dashboard: React.FC = () => {
                   </div>
                 </div>
                 <div className="values">
-                  <h4>{stats?.block_time && getPretty(stats.block_time)}</h4>
-                  <p>ms</p>
+                  <h4>{blockTime && getPretty(blockTime)}</h4>
+                  <p>sec</p>
                 </div>
               </Card>
             </div>
