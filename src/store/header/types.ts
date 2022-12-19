@@ -12,7 +12,7 @@ export interface HeaderState {
   transactionsDataPaginated: any[];
   singleTransaction: {};
   singleBlock: {};
-  enrolledValidators:[];
+  enrolledValidators: [];
   blockTransactions: {
     tx: any[];
     total_data: number;
@@ -25,10 +25,10 @@ export interface HeaderState {
     transactions: number;
     validators: number;
   };
-  marketCapStats: {
+  marketCapStats: {};
+  isCoinNet: true;
 
-  }
-  isCoinNet : true;
+  blockHeight: number;
 }
 
 export const HEADER_CLASS_UPDATE = "HEADER_CLASS_UPDATE";
@@ -46,6 +46,14 @@ export const BLOCK_TRANSACTIONS = "BLOCK_TRANSACTIONS";
 export const BOA_STATS = "BOA_STATS";
 export const MARKET_CAP_STATS = "MARKET_CAP_STATS";
 export const NETWORK_STATUS = "NETWORK_STATUS";
+
+export const BLOCK_HEIGHT = "BLOCK_HEIGHT";
+
+export interface BlockHeightAction {
+  type: typeof BLOCK_HEIGHT;
+
+  blockHeight: number;
+}
 
 export interface HeaderClassRequestAction {
   type: typeof HEADER_CLASS_UPDATE;
@@ -123,6 +131,7 @@ export type HeaderAction =
   | SingleBlock
   | EnrolledValidators
   | AllBlockTransactions
-  | AllBoaStats 
+  | AllBoaStats
   | MarketCapStats
+  | BlockHeightAction
   | NetworkStats;

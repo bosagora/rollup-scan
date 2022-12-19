@@ -9,8 +9,6 @@ import { searchDataUpdater } from "store/header/thunks";
 // import copy from 'images/copy.svg'
 import moment from "moment";
 import { useTranslation } from "react-i18next";
-import endpoints from "../../global/config/urlconfigs";
-import request from "../../global/api/request";
 import CopyAddressClipboard from "components/CopyAddressClipboard/CopyAddressClipboard";
 import PageHelmet from "../../components/PageHelmet/PageHelmet";
 import GenericSearchBar from "../../components/GenericSearchBar/GenericSearchBar";
@@ -18,33 +16,16 @@ import Table from "../../components/Table/Table";
 
 const bigDecimal = require("js-big-decimal");
 
-// import { login } from "../../store/auth/thunks";
-// interface IMyProps {
-//   store?: any
-//   data?: any
-//   title?: string
-//   output: any
-//   name?: any
-//   history?: any
-//   searchedDataGet: Function
-//   searchDataCleaner: Function
-//   searchedData: {
-//     searchType: ''
-//     available: false
-//     details: {}
-//   }
-// }
-
 const Blocks: React.FC = (props: any) => {
   // All states for current screen
-  const dispatch = useDispatch(),
-    [showRecord, setTotalRecords] = useState<any>(20),
-    [currentPage, setCurrentPage] = useState(1),
-    [pageCount, setPageCount] = useState(0),
-    [blocksData, setBlocksData] = useState<any>([]),
-    [blocks, setBlocks] = useState<any>([]),
-    [CSVData, setCSVData] = useState([]),
-    [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
+  const [showRecord, setTotalRecords] = useState<any>(20);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageCount, setPageCount] = useState(0);
+  const [blocksData, setBlocksData] = useState<any>([]);
+  const [blocks, setBlocks] = useState<any>([]);
+  const [CSVData, setCSVData] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const { t } = useTranslation();
   //redux states
@@ -163,7 +144,7 @@ const Blocks: React.FC = (props: any) => {
           </Row>
           <Row>
             <Col lg={12} md={12} sm={12}>
-              <h2>{t(props.title)}</h2>
+              <h4>{t("Blocks")}</h4>
             </Col>
           </Row>
           {/* All Blocks list  */}
