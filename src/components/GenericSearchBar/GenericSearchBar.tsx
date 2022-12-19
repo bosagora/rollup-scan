@@ -93,9 +93,7 @@ const GenericSearchBar: React.FC<GenericSearchBarProps> = ({
     <div onClick={onClick} id="generic-search-bar">
       <InputGroup>
         <Input
-          placeholder={t(
-            "You_may_enter_a_block_height_block_hash_tx_hash_or_address_tx_hash_or_address"
-          )}
+          placeholder={t("searchMsg")}
           onChange={(e) => setSearch(e.target.value)}
           onKeyPress={handleKeypress}
         />

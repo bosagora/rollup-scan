@@ -9,6 +9,10 @@ import Transactions from "../../pages/Transactions/Transactions";
 import BlockDetails from "../../pages/Blocks/BlockDetails/BlockDetails";
 import Blocks from "../../pages/Blocks/Blocks";
 import PageNotFound from "../../pages/PageNotFound/PageNotFound";
+import { useDispatch } from "react-redux";
+import { blockHeightUpdate } from "../../store/header/action";
+import { useLastHeight } from "../../hooks/useRollup";
+import { useEffect } from "react";
 
 const RoutesPage: React.FC = () => {
   return (
@@ -34,6 +38,12 @@ const RoutesPage: React.FC = () => {
 export default RoutesPage;
 
 const Layout = () => {
+  const dispatch = useDispatch();
+  const { height } = useLastHeight();
+
+  useEffect(() => {
+    dispatch(blockHeightUpdate(height));
+  }, [height]);
   return (
     <>
       <Header />

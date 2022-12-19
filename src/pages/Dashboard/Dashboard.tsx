@@ -13,7 +13,7 @@ import BlocksBox from "../../components/Dashboard/Blocks";
 import TransactionBox from "../../components/Dashboard/TransactionBox";
 import PageHelmet from "../../components/PageHelmet/PageHelmet";
 import SearchBar from "../../components/SearchBar/SearchBar";
-import { useByFromHeight, useLastHeight } from "../../hooks/useRollup";
+import { useByFromHeight } from "../../hooks/useRollup";
 import request from "../../global/api/request";
 import { Block, Transaction } from "rollup-pm-sdk";
 import _ from "lodash";
@@ -32,12 +32,12 @@ const Dashboard: React.FC = () => {
 
   const [totalTransaction, setTotalTransaction] = useState<number>();
   const [blockTime, setBlockTime] = useState<number>();
-  const { height, heightError } = useLastHeight();
-  const { blocksHeader, blocksHeaderError } = useByFromHeight(height, 10);
+  const blockHeight = useSelector((state: any) => state.header.blockHeight);
+  const { blocksHeader } = useByFromHeight(blockHeight, 10);
 
   useEffect(() => {
-    console.log("changeHeight", height);
-  }, [height]);
+    console.log("changeHeight", blockHeight);
+  }, [blockHeight]);
 
   const getCIDData = useCallback(async () => {
     if (!blocksHeader) return;
@@ -81,8 +81,6 @@ const Dashboard: React.FC = () => {
     setTransactionLoading(true);
   }, [dispatch]);
 
-  useEffect(() => {}, [heightError, blocksHeaderError]);
-
   return (
     <div id="dashboard">
       <PageHelmet
@@ -117,7 +115,7 @@ const Dashboard: React.FC = () => {
                   </div>
                 </div>
                 <div className="values">
-                  <h4>{Boolean(height) && getPretty(height)}</h4>
+                  <h4>{Boolean(blockHeight) && getPretty(blockHeight)}</h4>
                   {/*<p>*/}
                   {/*  {getLatestHeightTime(stats?.time_stamp && stats.time_stamp)}*/}
                   {/*</p>*/}

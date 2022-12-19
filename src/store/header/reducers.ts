@@ -1,9 +1,10 @@
-import {AppAction} from "..";
+import { AppAction } from "..";
 import {
   BLOCK_TRANSACTIONS,
   BLOCKS_DATA_UPDATE,
   BLOCKS_DATA_UPDATE_WITH_PAGINATION,
   BOA_STATS,
+  BLOCK_HEIGHT,
   ENROLLED_VALIDATORS,
   HEADER_CLASS_UPDATE,
   HeaderState,
@@ -19,6 +20,7 @@ import {
 const initialState: HeaderState = {
   headerClass: "newclass",
   layoutClass: "layout-home",
+  blockHeight: Number.NaN,
   searchedData: {
     searchType: "",
     available: false,
@@ -47,9 +49,8 @@ const initialState: HeaderState = {
     price_in_usd: 0,
     time: new Date(),
     total24h_volume: 0,
-
   },
-  isCoinNet : true,
+  isCoinNet: true,
 };
 
 export function headerReducer(
@@ -57,6 +58,11 @@ export function headerReducer(
   action: AppAction
 ): HeaderState {
   switch (action.type) {
+    case BLOCK_HEIGHT:
+      return {
+        ...state,
+        blockHeight: action.blockHeight,
+      };
     case HEADER_CLASS_UPDATE:
       return {
         ...state,
@@ -125,8 +131,8 @@ export function headerReducer(
     case NETWORK_STATUS:
       return {
         ...state,
-        isCoinNet:action.isCoinNet,
-      }
+        isCoinNet: action.isCoinNet,
+      };
     default:
       return state;
   }

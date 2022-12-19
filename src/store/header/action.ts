@@ -1,4 +1,5 @@
 import {
+  BLOCK_HEIGHT,
   BLOCK_TRANSACTIONS,
   BLOCKS_DATA_UPDATE,
   BLOCKS_DATA_UPDATE_WITH_PAGINATION,
@@ -6,8 +7,6 @@ import {
   ENROLLED_VALIDATORS,
   HEADER_CLASS_UPDATE,
   HeaderAction,
-  MARKET_CAP_STATS,
-  NETWORK_STATUS,
   SEARCHED_DATA_UPDATE,
   SINGLE_BLOCK,
   SINGLE_TRANSACTION,
@@ -15,6 +14,12 @@ import {
   TRANSACTIONS_DATA_UPDATE_WITH_PAGINATION,
 } from "./types";
 
+export function blockHeightUpdate(blockHeight: number): HeaderAction {
+  return {
+    type: BLOCK_HEIGHT,
+    blockHeight,
+  };
+}
 export function headerClassRequest(
   headerClass: string,
   layoutClass: string
@@ -106,18 +111,4 @@ export function allBoaStats(boaStats: any): HeaderAction {
     type: BOA_STATS,
     boaStats,
   };
-}
-
-export function marketCapStats(marketCapStats: any): HeaderAction {
-  return {
-    type: MARKET_CAP_STATS,
-    marketCapStats,
-  };
-}
-
-export function networkStatus(networkState:any): HeaderAction{
-  return {
-    type : NETWORK_STATUS,
-    isCoinNet : networkState,
-  }
 }
