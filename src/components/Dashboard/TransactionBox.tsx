@@ -5,9 +5,11 @@ import React from "react";
 import { useTranslation, withTranslation } from "react-i18next";
 import Loader from "../Loader/Loader";
 import moment from "moment/moment";
+import { Transaction } from "rollup-pm-sdk";
+import { Amount } from "../../global/config/config";
 
 interface TransactionProps {
-  data?: any;
+  data?: Transaction[];
 
   isLoading?: boolean;
 }
@@ -32,9 +34,9 @@ const TransactionBox: React.FC<TransactionProps> = (
         <table>
           <thead>
             <tr>
-              <th>{t("Tx_Hash")}</th>
-              <th>{t("Type")}</th>
-              <th>{t("Height")}</th>
+              <th>Sequence number</th>
+              <th>Type</th>
+              <th>Amount</th>
               <th>{t("Time")}</th>
             </tr>
           </thead>
@@ -53,39 +55,25 @@ const TransactionBox: React.FC<TransactionProps> = (
               </tr>
             ) : (
               <>
-                {data.slice(0, 10).map((item: any, index: any) => (
+                {data.map((item: any, index: any) => (
                   <tr key={index}>
                     <td>
                       <div
                         className="link-color"
-                        onClick={() => transactionOverview(item.tx_hash)}
+                        // onClick={() => transactionOverview(item.sequence)}
                       >
-                        {item.tx_hash.slice(0, 6) +
-                          `…` +
-                          item.tx_hash.slice(-1 * 6)}
+                        {item.sequence}
                       </div>
                     </td>
-                    <td>{t(item.type)}</td>
+                    <td>{t(item.state === "0" ? "Charge" : "Discharge")}</td>
                     <td>
-                      {item.height ? getPretty(item.height) : item.height}
+                      {item?.amount ? Amount(item?.amount) : item?.amount}
                     </td>
                     <td>
                       {moment
-                        .utc(item.time_stamp * 1000)
-                        .fromNow()
-                        .includes("day") ||
-                      moment
-                        .utc(item.time_stamp * 1000)
-                        .fromNow()
-                        .includes("month") ||
-                      moment
-                        .utc(item.time_stamp * 1000)
-                        .fromNow()
-                        .includes("year")
-                        ? moment
-                            .utc(item.time_stamp * 1000)
-                            .format("YYYY-MM-DD HH:mm:ss") + " UTC"
-                        : ""}
+                        .utc(item.timestamp * 1000)
+                        .locale("en")
+                        .fromNow()}
                     </td>
                   </tr>
                 ))}

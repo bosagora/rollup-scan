@@ -10,10 +10,9 @@ import { DAppProvider } from "@usedapp/core";
 import { getChainConfig } from "./global/config/AgoraChain";
 import { createRoot } from "react-dom/client";
 
-const config = getChainConfig("test");
 const root = createRoot(document.getElementById("root")!);
 root.render(
-  <DAppProvider config={config}>
+  <DAppProvider config={getChainConfig()}>
     <Provider store={store}>
       <I18nextProvider i18n={i18n}>
         <App />

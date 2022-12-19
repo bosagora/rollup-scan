@@ -2,7 +2,7 @@ import axios, { Method, AxiosResponse } from "axios";
 // import store from "../store";
 
 const api = axios.create({
-  baseURL: process.env.REACT_APP_HOST_BACKEND,
+  baseURL: process.env.REACT_APP_IPSF_URL,
 });
 
 //store.getState() // to get store states for token

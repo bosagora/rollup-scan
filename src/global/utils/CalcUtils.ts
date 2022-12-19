@@ -58,3 +58,10 @@ export const getTransactionAddressAmount = (
       : "-" + getPretty(Amount(Math.abs(value))),
   };
 };
+
+export const hashPretty = (hash: string) => {
+  if (hash && hash.length > 7) {
+    return hash.slice(0, 6) + `…` + hash.slice(-1 * 6);
+  }
+  return "";
+};
