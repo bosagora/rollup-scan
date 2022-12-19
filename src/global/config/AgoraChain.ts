@@ -40,7 +40,7 @@ export const AgoraTestnet: Chain = {
 
 export const getChainConfig = (): Config => {
   let config;
-  if (process.env.NODE_ENV === "development") {
+  if (["dev", "test"].includes(process.env.REACT_APP_RUN)) {
     config = {
       readOnlyChainId: AgoraTestnet.chainId,
       readOnlyUrls: {
