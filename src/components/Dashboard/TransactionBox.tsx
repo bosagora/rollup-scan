@@ -1,6 +1,3 @@
-import { RouterPathEnum } from "../../global/routes/RouterPathEnum";
-import { getPretty } from "../../global/utils/CalcUtils";
-import { useNavigate } from "react-router-dom";
 import React from "react";
 import { useTranslation, withTranslation } from "react-i18next";
 import Loader from "../Loader/Loader";
@@ -16,14 +13,14 @@ interface TransactionProps {
 const TransactionBox: React.FC<TransactionProps> = (
   props: TransactionProps
 ) => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const { t } = useTranslation();
 
   const { data, isLoading } = props;
 
-  const transactionOverview = (hash: string) => {
-    navigate(`${RouterPathEnum.TRANSACTION_OVERVIEW}/${hash}`);
-  };
+  // const transactionOverview = (hash: string) => {
+  //   navigate(`${RouterPathEnum.TRANSACTION_OVERVIEW}/${hash}`);
+  // };
 
   return (
     <div className="transactions">

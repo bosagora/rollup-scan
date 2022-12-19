@@ -15,7 +15,6 @@ import {
   allEnrolledValidators,
   allBlockTransactions,
   allBoaStats,
-  marketCapStats,
 } from "./action";
 
 export function headerClassUpdater(

@@ -27,7 +27,7 @@ const TransactionOverview: React.FC = (props: any) => {
   // All states for current screen
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
-  const [allData, setAllData] = useState<any>([]);
+  const [allData] = useState<any>([]);
   const searchedData = useSelector((state: any) => state.header.searchedData);
   const hash = props.match.params["hash"];
   const marketCapStats: MarketCapStats = useSelector(
@@ -35,16 +35,16 @@ const TransactionOverview: React.FC = (props: any) => {
   );
   const { t } = useTranslation();
 
-  const getTransactionData = (hash: string) => {
-    // request("GET", `${endpoints.transactionDetails}/${hash}`, {})
-    //   .then((res: any) => {
-    //     setAllData(res.data);
-    //     setLoading(false);
-    //   })
-    //   .catch(() => {
-    //     setLoading(false);
-    //   });
-  };
+  // const getTransactionData = (hash: string) => {
+  //   // request("GET", `${endpoints.transactionDetails}/${hash}`, {})
+  //   //   .then((res: any) => {
+  //   //     setAllData(res.data);
+  //   //     setLoading(false);
+  //   //   })
+  //   //   .catch(() => {
+  //   //     setLoading(false);
+  //   //   });
+  // };
 
   // Get single Transaction details
   useEffect(() => {

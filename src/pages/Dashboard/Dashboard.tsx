@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Card, Col, Container, Row } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
 import heightIcon from "assets/images/height.svg";
@@ -16,7 +16,7 @@ import SearchBar from "../../components/SearchBar/SearchBar";
 import { useByFromHeight, useLastHeight } from "../../hooks/useRollup";
 import request from "../../global/api/request";
 import { Block, Transaction } from "rollup-pm-sdk";
-import { BlockHeader } from "../../global/Types";
+import _ from "lodash";
 
 const Dashboard: React.FC = () => {
   // states for current screen
@@ -31,50 +31,54 @@ const Dashboard: React.FC = () => {
   const [transactionsData, setTransactionsData] = useState<Transaction[]>([]);
 
   const [totalTransaction, setTotalTransaction] = useState<number>();
-  const [blockHeader, setBlockHeader] = useState<BlockHeader>();
   const [blockTime, setBlockTime] = useState<number>();
   const { height, heightError } = useLastHeight();
   const { blocksHeader, blocksHeaderError } = useByFromHeight(height, 10);
 
   useEffect(() => {
-    if (blockHeader && blockHeader?.CID) {
-      request("GET", blockHeader.CID, {})
-        .then((res) => {
-          if (res.status === 200) {
-            const block: Block = res.data as Block;
-            if (block?.txs?.length) {
-              const txs = block.txs;
-              const lastTx: Transaction = txs[txs.length - 1];
-              setTotalTransaction(lastTx?.sequence ?? Number.NaN);
-              const txTen = txs
-                .slice(txs.length > 10 ? -10 : txs.length * -1)
-                .reverse();
-              setTransactionsData(txTen);
-            }
+    console.log("changeHeight", height);
+  }, [height]);
+
+  const getCIDData = useCallback(async () => {
+    if (!blocksHeader) return;
+    let data = [];
+    for await (const h of blocksHeader) {
+      const res = await request("GET", h.CID, {});
+      if (res.status === 200) {
+        const block: Block = res.data as Block;
+        if (block?.txs?.length) {
+          const txs = _.sortBy(block.txs, "sequence").reverse();
+          data = _.concat(data, txs);
+          if (data.length < 10) {
+            continue;
+          } else {
+            const txTen = _.slice(data, 0, 10);
+            setTransactionsData(txTen);
+            setTotalTransaction(txTen[0].sequence);
+            break;
           }
-        })
-        .catch((e) => {
-          console.log("e", e);
-        });
+        }
+      }
     }
-  }, [blockHeader?.height]);
+    setTransactionLoading(false);
+  }, [blocksHeader]);
 
   useEffect(() => {
     if (blocksHeader && blocksHeader.length > 0) {
-      const reverse = blocksHeader.reverse();
-      setBlockHeader(reverse[0]);
-      setBlocksData(reverse);
-      if (reverse.length >= 2) {
-        const currentTime = reverse[0].timestamp;
-        const prevTime = reverse[1].timestamp;
+      getCIDData();
+      setBlocksData(blocksHeader);
+      setBlockLoading(false);
+      if (blocksHeader.length >= 2) {
+        const currentTime = blocksHeader[0].timestamp;
+        const prevTime = blocksHeader[1].timestamp;
         setBlockTime(currentTime - prevTime);
       }
     }
   }, [blocksHeader]);
 
   useEffect(() => {
-    setBlockLoading(false);
-    setTransactionLoading(false);
+    setBlockLoading(true);
+    setTransactionLoading(true);
   }, [dispatch]);
 
   useEffect(() => {}, [heightError, blocksHeaderError]);

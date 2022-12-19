@@ -3,6 +3,7 @@ import { BigNumber, Contract, utils } from "ethers";
 import { Falsy, useCall } from "@usedapp/core";
 import { useEffect, useState } from "react";
 import { BlockHeader } from "../global/Types";
+import _ from "lodash";
 
 const rollupAddress = process.env.REACT_APP_ROLLUP_CONTRACT_ADDRESS || "";
 const rollupInterface = new utils.Interface(RollupAbi.abi);
@@ -66,7 +67,8 @@ export const useByFromHeight = (height: number, size: number) => {
         setBlocksHeaderError(error.message);
       } else {
         if (value && value.length) {
-          setBlocksHeader(value[0].map((bh) => createTx(bh)));
+          const txList = _.sortBy(value[0], "height").reverse();
+          setBlocksHeader(txList.map((bh) => createTx(bh)));
         }
       }
     }
@@ -160,7 +162,7 @@ export const useSize = () => {
 
 export const createTx = (tx: any[]): BlockHeader => {
   const header = new BlockHeader();
-  header.height = tx[0];
+  header.height = tx[0].toString();
   header.curBlock = tx[1];
   header.prevBlock = tx[2];
   header.merkleRoot = tx[3];
