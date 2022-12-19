@@ -23,7 +23,7 @@ export type AppAction = TestAction | HeaderAction;
 
 let store: Store;
 
-if (process.env.NODE_ENV === "development") {
+if (["dev", "test"].includes(process.env.REACT_APP_RUN)) {
   store = createStore(
     rootReducer,
     initialState,
