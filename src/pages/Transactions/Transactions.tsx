@@ -18,6 +18,7 @@ import { Amount } from "global/config/config";
 import PageHelmet from "../../components/PageHelmet/PageHelmet";
 import GenericSearchBar from "../../components/GenericSearchBar/GenericSearchBar";
 import Table from "../../components/Table/Table";
+import { getPretty } from "../../global/utils/CalcUtils";
 
 var bigDecimal = require("js-big-decimal");
 // interface IMyProps {
@@ -35,11 +36,6 @@ var bigDecimal = require("js-big-decimal");
 //     details: {}
 //   }
 // }
-
-const getPretty = (val: any) => {
-  var value = bigDecimal.getPrettyValue(val);
-  return value;
-};
 
 const Transactions: React.FC = (props: any) => {
   // All states for current screen

@@ -2,16 +2,12 @@ import React, { ReactNode, useState } from "react";
 import { Button, Input, InputGroup } from "reactstrap";
 import { AiOutlineSearch } from "react-icons/ai";
 import "./GenericSearchBar.scss";
-import {
-  useTranslation,
-  withTranslation,
-  WithTranslation,
-} from "react-i18next";
+import { useTranslation } from "react-i18next";
 import endpoints from "../../global/config/urlconfigs";
 import request from "../../global/api/request";
 import { RouterPathEnum } from "global/routes/RouterPathEnum";
 
-export interface GenericSearchBarProps extends WithTranslation {
+export interface GenericSearchBarProps {
   children?: ReactNode;
   onClick?: () => void;
   history?: any;
@@ -26,7 +22,6 @@ const GenericSearchBar: React.FC<GenericSearchBarProps> = ({
   children,
   onClick,
   history,
-  i18n,
   searchedDataGet,
   searchedData,
 }) => {
@@ -110,4 +105,4 @@ const GenericSearchBar: React.FC<GenericSearchBarProps> = ({
   );
 };
 
-export default withTranslation()(GenericSearchBar);
+export default React.memo(GenericSearchBar);

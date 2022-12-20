@@ -42,6 +42,7 @@ const Layout = () => {
   const { height } = useLastHeight();
 
   useEffect(() => {
+    console.log("LayoutChangeHeight", height);
     dispatch(blockHeightUpdate(height));
   }, [height]);
   return (

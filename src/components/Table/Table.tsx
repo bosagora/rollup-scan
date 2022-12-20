@@ -11,52 +11,8 @@ import "./Table.scss";
 import Loader from "components/Loader/Loader";
 import { CSVLink } from "react-csv";
 import Pagination from "react-js-pagination";
-import { VscArrowSmallUp, VscArrowSmallDown } from "react-icons/vsc";
 
-export interface tableData {
-  Height: string | number;
-  Hash: string | number;
-  Markle_Root: string | number;
-  Signature: string | number;
-  Validators: string | number;
-  TX_Count: string | number;
-  Enrollment_Count: string | number;
-  Timestamp: string | number;
-  No: string | number;
-  UTXO_Key: string | number;
-  Public_Key: string | number;
-  Agora_Version: string | number;
-  Freezing: string | number;
-  // Enrollment_Count: string | number,
-  Preimage_Height: string | number;
-  // Validators: string | number,
-  Stashing: string | number;
-  // No: string | number,
-  // UTXO_Key: string | number,
-  Uptime: string | number;
-  Node_IP: string | number;
-  // Preimage_Height: 12,
-  Preimage_Hash: string | number;
-  Freezing_Amount: string | number;
-  // UTXO_Key: 666,
-  // Public_Key: 666,
-  // Preimage_Height: 666,
-  // Preimage_Hash: 666,
-  Slashing: string | number;
-  Signed: string | number;
-  Cycle_Length: string | number;
-  Random_Seed: string | number;
-  Enroll_Signature: string | number;
-  // Hash: 333,
-  Type: string | number;
-  Amount: string | number;
-  Fee: string | number;
-  Size: string | number;
-  Time: string | number;
-  Address: string | number;
-  UTXO: string | number;
-}
-export interface TableProps extends WithTranslation {
+export interface TableProps {
   children?: ReactNode;
   onClick?: () => void;
   onChange?: () => void;
@@ -87,7 +43,6 @@ const Table: React.FC<TableProps> = ({
   numberOfRecordShow,
   headData,
   headerData,
-  i18n,
   currentPage,
   showRecord,
   pageCount,
@@ -101,7 +56,7 @@ const Table: React.FC<TableProps> = ({
   sortingStatus,
 }) => {
   // const [pageLength, setPageLength] = useState<any>('')
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const handleChangePageNumber = (e: any, page: number) => {
     pageChange(page);
   };
@@ -119,83 +74,6 @@ const Table: React.FC<TableProps> = ({
     return keys.map((key, index) => {
       // return <th key={key}>{t(key)}</th>
       if (type === "Node") {
-        return key === "No" ? (
-          <th key={key}>
-            {i18n.language === "korean" || i18n.language === "chinese"
-              ? key === "No"
-                ? t("Number")
-                : t(key)
-              : key.replace(/[^a-zA-Z ]/g, " ")}
-          </th>
-        ) : (
-          <th key={key}>
-            {i18n.language === "korean" || i18n.language === "chinese"
-              ? t(key)
-              : key.replace(/[^a-zA-Z ]/g, " ")}
-          </th>
-        );
-      } else if (type === "Holder") {
-        return key === "No" ? (
-          <th key={key}>
-            {i18n.language === "korean" || i18n.language === "chinese"
-              ? key === "No"
-                ? t("Number")
-                : t(key)
-              : key.replace(/[^a-zA-Z ]/g, " ")}
-          </th>
-        ) : key === "Balance" ? (
-          <th key={key}>
-            {i18n.language === "korean" || i18n.language === "chinese"
-              ? t(key)
-              : key.replace(/[^a-zA-Z ]/g, " ")}
-            {sortingStatus.Balance ? (
-              <VscArrowSmallDown
-                onClick={() => sortingData && sortingData("Balance")}
-              />
-            ) : (
-              <VscArrowSmallUp
-                onClick={() => sortingData && sortingData("Balance")}
-              />
-            )}
-          </th>
-        ) : key === "Freezing" ? (
-          <th key={key}>
-            {i18n.language === "korean" || i18n.language === "chinese"
-              ? t(key)
-              : key.replace(/[^a-zA-Z ]/g, " ")}
-            {sortingStatus.Freezing ? (
-              <VscArrowSmallDown
-                onClick={() => sortingData && sortingData("Freezing")}
-              />
-            ) : (
-              <VscArrowSmallUp
-                onClick={() => sortingData && sortingData("Freezing")}
-              />
-            )}
-          </th>
-        ) : key === "Received_Rewards" ? (
-          <th key={key}>
-            {i18n.language === "korean" || i18n.language === "chinese"
-              ? t(key)
-              : key.replace(/[^a-zA-Z ]/g, " ")}
-            {sortingStatus.RecivedReward ? (
-              <VscArrowSmallDown
-                onClick={() => sortingData && sortingData("Received_Rewards")}
-              />
-            ) : (
-              <VscArrowSmallUp
-                onClick={() => sortingData && sortingData("Received_Rewards")}
-              />
-            )}
-          </th>
-        ) : (
-          <th key={key}>
-            {i18n.language === "korean" || i18n.language === "chinese"
-              ? t(key)
-              : key.replace(/[^a-zA-Z ]/g, " ")}
-          </th>
-        );
-      } else if (type === "Proposals") {
         return key === "No" ? (
           <th key={key}>
             {i18n.language === "korean" || i18n.language === "chinese"
@@ -291,9 +169,9 @@ const Table: React.FC<TableProps> = ({
                 className="form-control"
                 onChange={(e) => numberOfRecordShow(parseInt(e.target.value))}
               >
+                <option value={10}>10</option>
                 <option value={20}>20</option>
-                <option value={50}>50</option>
-                <option value={100}>100</option>
+                <option value={30}>30</option>
               </select>
               <ReactSVG src={caretIco} />
             </div>
@@ -308,29 +186,15 @@ const Table: React.FC<TableProps> = ({
               onChange={(e) => handleChangePageNumber("0", e)}
             />
           </div>
-          <div className="show-list d-sm">
-            <p>{t("Show")}</p>
-            <div className="select-cont">
-              <select
-                className="form-control"
-                onChange={(e) => numberOfRecordShow(parseInt(e.target.value))}
-              >
-                <option value={20}>20</option>
-                <option value={50}>50</option>
-                <option value={100}>100</option>
-              </select>
-              <ReactSVG src={caretIco} />
+          <div className="show-list d-lg" style={{ width: "107px" }}></div>
+          {CSVData && (
+            <div className="csv-dld">
+              <p>{t("Download")}</p>
+              <CSVLink data={CSVData} filename={fileName}>
+                {t("CSV_Export")} <MdFileDownload />
+              </CSVLink>
             </div>
-          </div>
-          <div className="csv-dld">
-            <p>{t("Download")}</p>
-            <CSVLink data={CSVData} filename={fileName}>
-              {t("CSV_Export")} <MdFileDownload />
-            </CSVLink>
-            {/* <Button>
-            {t('CSV_Export')} <MdFileDownload />
-          </Button> */}
-          </div>
+          )}
         </div>
       ) : (
         ""
