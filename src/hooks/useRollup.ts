@@ -1,9 +1,10 @@
 import RollupAbi from "global/contracts/abis/RollUp.json";
 import { BigNumber, Contract, utils } from "ethers";
 import { Falsy, useCall } from "@usedapp/core";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { BlockHeader } from "../global/Types";
 import _ from "lodash";
+import { QueryParams } from "@usedapp/core/src/constants/type/QueryParams";
 
 const rollupAddress = process.env.REACT_APP_ROLLUP_CONTRACT_ADDRESS || "";
 const rollupInterface = new utils.Interface(RollupAbi.abi);
@@ -32,7 +33,10 @@ export const useLastHeight = () => {
         if (value && value.length) {
           setHeightError(null);
           const h = BigNumber.from(value[0]).toNumber();
-          if (h !== height) setHeight(h);
+          if (h !== height) {
+            console.log("if (h !== height) {", height, h);
+            setHeight(h);
+          }
         }
       }
     }
@@ -47,28 +51,46 @@ export const useLastHeight = () => {
  * @return Block header list
  */
 export const useByFromHeight = (height: number, size: number) => {
+  console.log("Insert:GetBlocks", height, size);
   const [blocksHeader, setBlocksHeader] = useState<BlockHeader[]>([]);
   const [blocksHeaderError, setBlocksHeaderError] = useState(null);
+  const [beforeHeight, setBeforeHeight] = useState(Number.NaN);
+  const [beforeSize, setBeforeSize] = useState(Number.NaN);
+  const [param, setParam] = useState([]);
 
-  const h = height < size ? 0 : height - size + 1;
-  const s = height < size ? height : size;
+  useEffect(() => {
+    const h = height < size ? 0 : height - size + 1;
+    const s = height < size ? height + 1 : size;
+    console.log("Actual Param:", h, s);
+    setParam([h, s]);
+  }, [height, size]);
 
-  const res: any =
-    useCall({
+  const res: any = useCall(
+    {
       contract: rollup,
       method: "getByFromHeight",
-      args: [h, s],
-    }) ?? null;
+      args: param,
+    },
+    { refresh: "never" }
+  );
 
   useEffect(() => {
     if (res) {
       const { error, value } = res;
       if (error) {
+        console.log("error", error);
         setBlocksHeaderError(error.message);
       } else {
         if (value && value.length) {
-          const txList = _.sortBy(value[0], "height").reverse();
-          setBlocksHeader(txList.map((bh) => createTx(bh)));
+          if (beforeHeight !== height || beforeSize !== size) {
+            console.log("Before not same");
+            const txList = value[0].map((bh) => createTx(bh)); //;
+            setBlocksHeader(
+              _.sortBy(txList, (o) => Number(o.height)).reverse()
+            );
+            setBeforeHeight(height);
+            setBeforeSize(size);
+          }
         }
       }
     }
@@ -166,7 +188,7 @@ export const createTx = (tx: any[]): BlockHeader => {
   header.curBlock = tx[1];
   header.prevBlock = tx[2];
   header.merkleRoot = tx[3];
-  header.timestamp = tx[4];
+  header.timestamp = tx[4].toNumber();
   header.CID = tx[5];
   return header;
 };

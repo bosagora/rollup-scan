@@ -1,15 +1,11 @@
 import React, { FC, ReactNode } from "react";
 import { Container } from "reactstrap";
 import { FaRegCopyright } from "react-icons/fa";
-import {
-  useTranslation,
-  withTranslation,
-  WithTranslation,
-} from "react-i18next";
+import { useTranslation } from "react-i18next";
 
 import "./Footer.scss";
 
-export interface FooterProps extends WithTranslation {
+export interface FooterProps {
   children?: ReactNode;
   onClick?: () => void;
 }
@@ -30,4 +26,4 @@ const Footer: FC<FooterProps> = (props) => {
   );
 };
 
-export default withTranslation()(Footer);
+export default React.memo(Footer);

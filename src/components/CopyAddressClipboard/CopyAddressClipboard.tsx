@@ -2,15 +2,10 @@ import React, { ReactNode, useEffect, useState } from "react";
 import "./CopyAddressClipboard.scss";
 import { Tooltip } from "reactstrap";
 import copy from "assets/images/copy.svg";
-// import { ReactSVG } from 'react-svg'
 import { FaRegCheckCircle } from "react-icons/fa";
-import {
-  useTranslation,
-  withTranslation,
-  WithTranslation,
-} from "react-i18next";
+import { useTranslation } from "react-i18next";
 
-export interface CopyAddressClipboardProps extends WithTranslation {
+export interface CopyAddressClipboardProps {
   text: string;
   children?: ReactNode;
   onClick?: () => void;
@@ -25,7 +20,6 @@ const CopyAddressClipboard: React.FC<CopyAddressClipboardProps> = ({
   id,
   onClick,
   className,
-  i18n,
 }) => {
   const [tooltipOpen, setTooltipOpen] = useState<boolean>(false);
   const [copied, setCopied] = useState<boolean>(false);
@@ -67,11 +61,8 @@ const CopyAddressClipboard: React.FC<CopyAddressClipboardProps> = ({
           </Tooltip>
         </>
       )}
-      {/* <ReactSVG src={copy} onClick={onClick} className={className}>
-        {children}
-      </ReactSVG> */}
     </div>
   );
 };
 
-export default withTranslation()(CopyAddressClipboard);
+export default React.memo(CopyAddressClipboard);
