@@ -12,7 +12,7 @@ import {
 } from "reactstrap";
 import { AiOutlineGlobal } from "react-icons/ai";
 import Logo from "assets/images/the9_logo.svg";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import menuDefine from "../../global/routes/menuDefine";
 import { useTranslation } from "react-i18next";
 import { ReactSVG } from "react-svg";
@@ -27,6 +27,7 @@ const Header: React.FC = () => {
   const dispatch = useDispatch();
   const toggle = () => setIsOpen(!isOpen);
   const { t } = useTranslation();
+  const location = useLocation();
   const networkName = process.env.REACT_APP_CHAIN_NAME;
 
   const [headerLanding, setHeaderLanding] = useState("newclass");
@@ -40,12 +41,17 @@ const Header: React.FC = () => {
         setHeaderLanding("newclass2");
       }
     };
+
+    const resize = () => {
+      setHideNav(window.innerWidth <= 991);
+    };
+
     window.addEventListener("scroll", listenScrollEvent);
     window.addEventListener("resize", resize);
     resize();
 
     if (window.location.pathname !== "/") {
-      headerClassUpdate("newclass2", "layout-generic");
+      dispatch(headerClassUpdater("newclass2", "layout-generic"));
     }
 
     return () => {
@@ -54,20 +60,9 @@ const Header: React.FC = () => {
     };
   }, []);
 
-  const resize = () => {
-    setHideNav(window.innerWidth <= 991);
-  };
-
-  const headerClassUpdate = (
-    changeHeaderClassName: any,
-    changeLayoutClassName: any
-  ) => {
-    dispatch(headerClassUpdater(changeHeaderClassName, changeLayoutClassName));
-  };
-
   useEffect(() => {
-    setActiveTab(window.location.pathname);
-  }, [window.location.pathname]);
+    updateHeaderColor(location.pathname);
+  }, [location, location.pathname]);
 
   const updateHeaderColor = (route: string) => {
     setActiveTab(route);
@@ -75,9 +70,9 @@ const Header: React.FC = () => {
       toggle();
     }
     if (route === "/") {
-      headerClassUpdate("newclass", "layout-home");
+      dispatch(headerClassUpdater("newclass", "layout-home"));
     } else {
-      headerClassUpdate("newclass2", "layout-general");
+      dispatch(headerClassUpdater("newclass2", "layout-general"));
     }
   };
 
@@ -93,7 +88,7 @@ const Header: React.FC = () => {
         >
           <Container fluid="xl">
             <div className="navbar-brand">
-              <Link to="/" onClick={() => updateHeaderColor("/")}>
+              <Link to="/">
                 <img
                   src={Logo}
                   alt="BOASCAN by Bosagora"
@@ -226,4 +221,4 @@ const Header: React.FC = () => {
   );
 };
 
-export default Header;
+export default React.memo(Header);

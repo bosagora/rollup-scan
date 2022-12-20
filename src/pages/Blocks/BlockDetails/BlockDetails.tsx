@@ -16,8 +16,7 @@ import PageHelmet from "../../../components/PageHelmet/PageHelmet";
 import GenericSearchBar from "../../../components/GenericSearchBar/GenericSearchBar";
 import Table from "../../../components/Table/Table";
 import Button from "../../../components/Button/Button";
-
-var bigDecimal = require("js-big-decimal");
+import { getPretty } from "../../../global/utils/CalcUtils";
 
 const BlockDetails: React.FC = (props: any) => {
   // All states for current screen
@@ -32,116 +31,71 @@ const BlockDetails: React.FC = (props: any) => {
   const [openValidators, setOpenValidators] = useState(false);
   // const allData: any = useSelector((state: any) => state.header.singleBlock)
   const searchedData = useSelector((state: any) => state.header.searchedData);
-  const type = props.match.params["hash"].split(":")[0];
-  const hash = props.match.params["hash"].split(":")[1];
 
   const validatorsSection = React.useRef<HTMLInputElement>(null);
   const { t } = useTranslation();
-  if (
-    props.location.state &&
-    props.location.state.validatorsSection &&
-    validatorsSection.current
-  ) {
-    validatorsSection.current.scrollIntoView({ behavior: "smooth" });
-  }
-
-  const getPretty = (val: any) => {
-    var value = bigDecimal.getPrettyValue(val);
-    return value;
-  };
-
-  useEffect(() => {
-    getBlockData();
-    getBlockValidators();
-  }, [hash, dispatch, type, showRecord, currentPage]);
-
-  const getBlockValidators = () => {
-    setLoading(true);
-    request("GET", `${endpoints.blockValidators}?${type}=${hash}`, {
-      pageSize: showRecord,
-      page: currentPage,
-    })
-      .then((res: any) => {
-        if (res.data.length > 0) {
-          setOpenValidators(true);
-        }
-        setValidators(res.data);
-        let CSVData: any = [];
-        setCSVData([]);
-        for (let i = 0; i < res.data.length; i++) {
-          CSVData.push({
-            UTXOKey: res.data[i].utxo_key,
-            PublicKey: res.data[i].address,
-            PreimageHeight: getPretty(res.data[i].pre_image.height),
-            PreimageHash: res.data[i].pre_image.hash,
-            Slashing: res.data[i].slashed === 0 ? t("No") : t("Yes"),
-            Signed: res.data[i].block_signed === 0 ? t("No") : t("Yes"),
-          });
-        }
-        setCSVData(CSVData);
-        setPageCount(res.data[0].full_count);
-        setLoading(false);
-      })
-      .catch((error: any) => {
-        setLoading(false);
-        return error;
-      });
-  };
+  // if (
+  //   props.location.state &&
+  //   props.location.state.validatorsSection &&
+  //   validatorsSection.current
+  // ) {
+  //   validatorsSection.current.scrollIntoView({ behavior: "smooth" });
+  // }
 
   // Get single block detail API call
   const getBlockData = () => {
-    if (type === "hash") {
-      setLoading(true);
-      // request("GET", `${endpoints.blockDetails}?hash=${hash}`, {})
-      //   .then((res: any) => {
-      //     setAllData(res.data);
-      //     setLoading(false);
-      //   })
-      //   .catch((error: any) => {
-      //     setLoading(false);
-      //     return error;
-      //   });
-      // dispatch(singleBlockDetailsfromHash(hash))
-    }
-    if (type === "height") {
-      setLoading(true);
-      // request("GET", `${endpoints.blockDetails}?height=${hash}`, {})
-      //   .then((res: any) => {
-      //     setAllData(res.data);
-      //     setLoading(false);
-      //   })
-      //   .catch((error: any) => {
-      //     setLoading(false);
-      //     return error;
-      //   });
-      // dispatch(singleBlockDetailsfromHeight(hash))
-    }
+    // if (type === "hash") {
+    //   setLoading(true);
+    // request("GET", `${endpoints.blockDetails}?hash=${hash}`, {})
+    //   .then((res: any) => {
+    //     setAllData(res.data);
+    //     setLoading(false);
+    //   })
+    //   .catch((error: any) => {
+    //     setLoading(false);
+    //     return error;
+    //   });
+    // dispatch(singleBlockDetailsfromHash(hash))
+    // }
+    // if (type === "height") {
+    //   setLoading(true);
+    // request("GET", `${endpoints.blockDetails}?height=${hash}`, {})
+    //   .then((res: any) => {
+    //     setAllData(res.data);
+    //     setLoading(false);
+    //   })
+    //   .catch((error: any) => {
+    //     setLoading(false);
+    //     return error;
+    //   });
+    // dispatch(singleBlockDetailsfromHeight(hash))
+    // }
   };
 
-  const pagination = useSelector((state: any) => state.pagination);
+  // const pagination = useSelector((state: any) => state.pagination);
 
   // Show number of records in list function
   const numberOfRecordShow = (Record: Number) => {
-    setTotalRecords(Record);
-    setCurrentPage(1);
+    //   setTotalRecords(Record);
+    //   setCurrentPage(1);
   };
 
-  useEffect(() => {
-    setCurrentPage(pagination.pageNumber);
-  }, [pagination.pageNumber]);
+  // useEffect(() => {
+  //   setCurrentPage(pagination.pageNumber);
+  // }, [pagination.pageNumber]);
 
   const nodeDetails = (address: any) => {
-    props.history.push(`${RouterPathEnum.NODE_DETAILS}/${address}`);
+    //   props.history.push(`${RouterPathEnum.NODE_DETAILS}/${address}`);
   };
 
   const blockDetails = (hash: string) => {
-    props.history.push(`${RouterPathEnum.BLOCKS_DETAILS}/hash:${hash}`);
+    //   props.history.push(`${RouterPathEnum.BLOCKS_DETAILS}/hash:${hash}`);
   };
 
   const transactionOverview = (utxoKey: string) => {
-    props.history.push(`${RouterPathEnum.TRANSACTION_OVERVIEW}/${utxoKey}`, {
-      utxoKey: true,
-    });
+    //   props.history.push(`${RouterPathEnum.TRANSACTION_OVERVIEW}/${utxoKey}`, {
+    //     utxoKey: true,
+    //   });
   };
 
   return (
@@ -511,4 +465,4 @@ const BlockDetails: React.FC = (props: any) => {
   );
 };
 
-export default withTranslation()(BlockDetails);
+export default BlockDetails;
