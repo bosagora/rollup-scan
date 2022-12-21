@@ -2,11 +2,7 @@ import React, { ReactNode } from "react";
 import { ReactSVG } from "react-svg";
 import { MdFileDownload } from "react-icons/md";
 import caretIco from "../../assets/images/show-caret.svg";
-import {
-  useTranslation,
-  WithTranslation,
-  withTranslation,
-} from "react-i18next";
+import { useTranslation } from "react-i18next";
 import "./Table.scss";
 import Loader from "components/Loader/Loader";
 import { CSVLink } from "react-csv";
@@ -14,7 +10,7 @@ import Pagination from "react-js-pagination";
 
 export interface TableProps {
   children?: ReactNode;
-  onClick?: () => void;
+  onClick?: (any) => void;
   onChange?: () => void;
   sortingData?: (a: string) => void;
   numberOfRecordShow?: any;
@@ -55,7 +51,6 @@ const Table: React.FC<TableProps> = ({
   loading,
   sortingStatus,
 }) => {
-  // const [pageLength, setPageLength] = useState<any>('')
   const { t, i18n } = useTranslation();
   const handleChangePageNumber = (e: any, page: number) => {
     pageChange(page);
@@ -70,49 +65,21 @@ const Table: React.FC<TableProps> = ({
   };
 
   const getHeader = () => {
-    let keys = getKeys();
+    const keys = getKeys();
     return keys.map((key, index) => {
-      // return <th key={key}>{t(key)}</th>
-      if (type === "Node") {
-        return key === "No" ? (
-          <th key={key}>
-            {i18n.language === "korean" || i18n.language === "chinese"
-              ? key === "No"
-                ? t("Number")
-                : t(key)
-              : key.replace(/[^a-zA-Z ]/g, " ")}
-          </th>
-        ) : (
-          <th key={key}>
-            {i18n.language === "korean" || i18n.language === "chinese"
-              ? t(key)
-              : key.replace(/[^a-zA-Z ]/g, " ")}
-          </th>
-        );
-      } else {
-        return (
-          <th key={key}>
-            {i18n.language === "korean" || i18n.language === "chinese"
-              ? t(key)
-              : key.replace(/[^a-zA-Z ]/g, " ")}
-          </th>
-        );
-      }
+      return (
+        <th key={key}>
+          {i18n.language === "korean" || i18n.language === "chinese"
+            ? t(key)
+            : key.replace(/[^a-zA-Z ]/g, " ")}
+        </th>
+      );
     });
   };
 
   const RenderRow = (props: any) => {
     return props.keys.map((key: any, index: number) => {
-      if (type === "Node") {
-        return key === "No" ? (
-          // key={props.data[key]
-          <td key={index}>{props.data[key]}</td>
-        ) : (
-          <td key={index}>{props.data[key]}</td>
-        );
-      } else {
-        return <td key={index}>{props.data[key]}</td>;
-      }
+      return <td key={index}>{props.data[key]}</td>;
     });
   };
   // const ddData = (e: any) => {
@@ -125,8 +92,8 @@ const Table: React.FC<TableProps> = ({
   // }
 
   const getRowsData = () => {
-    var items = headData ? headData : [];
-    var keys = getKeys();
+    const items = headData ? headData : [];
+    const keys = getKeys();
     return loading ? (
       <tr className="no-data">
         <td>
@@ -142,7 +109,7 @@ const Table: React.FC<TableProps> = ({
     ) : (
       items.map((row, index) => {
         return (
-          <tr key={index} onClick={onClick}>
+          <tr key={index} onClick={() => onClick(row)}>
             <RenderRow key={index} data={row} keys={keys} />
           </tr>
         );
@@ -203,4 +170,4 @@ const Table: React.FC<TableProps> = ({
   );
 };
 
-export default withTranslation()(Table);
+export default Table;

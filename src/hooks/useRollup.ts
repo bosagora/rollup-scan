@@ -1,10 +1,9 @@
 import RollupAbi from "global/contracts/abis/RollUp.json";
 import { BigNumber, Contract, utils } from "ethers";
 import { Falsy, useCall } from "@usedapp/core";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { BlockHeader } from "../global/Types";
 import _ from "lodash";
-import { QueryParams } from "@usedapp/core/src/constants/type/QueryParams";
 
 const rollupAddress = process.env.REACT_APP_ROLLUP_CONTRACT_ADDRESS || "";
 const rollupInterface = new utils.Interface(RollupAbi.abi);
@@ -34,7 +33,6 @@ export const useLastHeight = () => {
           setHeightError(null);
           const h = BigNumber.from(value[0]).toNumber();
           if (h !== height) {
-            console.log("if (h !== height) {", height, h);
             setHeight(h);
           }
         }
@@ -51,7 +49,6 @@ export const useLastHeight = () => {
  * @return Block header list
  */
 export const useByFromHeight = (height: number, size: number) => {
-  console.log("Insert:GetBlocks", height, size);
   const [blocksHeader, setBlocksHeader] = useState<BlockHeader[]>([]);
   const [blocksHeaderError, setBlocksHeaderError] = useState(null);
   const [beforeHeight, setBeforeHeight] = useState(Number.NaN);
@@ -61,7 +58,6 @@ export const useByFromHeight = (height: number, size: number) => {
   useEffect(() => {
     const h = height < size ? 0 : height - size + 1;
     const s = height < size ? height + 1 : size;
-    console.log("Actual Param:", h, s);
     setParam([h, s]);
   }, [height, size]);
 
@@ -83,7 +79,6 @@ export const useByFromHeight = (height: number, size: number) => {
       } else {
         if (value && value.length) {
           if (beforeHeight !== height || beforeSize !== size) {
-            console.log("Before not same");
             const txList = value[0].map((bh) => createTx(bh)); //;
             setBlocksHeader(
               _.sortBy(txList, (o) => Number(o.height)).reverse()
@@ -113,14 +108,7 @@ export const useByFromHeight = (height: number, size: number) => {
  * ]
  */
 export const useByHeight = (height: number | Falsy) => {
-  const [blockHeader, setBlockHeader] = useState<BlockHeader>({
-    height: undefined,
-    curBlock: undefined,
-    prevBlock: undefined,
-    merkleRoot: undefined,
-    timestamp: undefined,
-    CID: undefined,
-  });
+  const [blockHeader, setBlockHeader] = useState<BlockHeader>(undefined);
   const [blockHeaderError, setBlockHeaderError] = useState(null);
 
   const res: any =
@@ -129,7 +117,8 @@ export const useByHeight = (height: number | Falsy) => {
         contract: rollup,
         method: "getByHeight",
         args: [height],
-      }
+      },
+      { refresh: "everyBlock" }
     ) ?? {};
 
   useEffect(() => {
@@ -140,7 +129,12 @@ export const useByHeight = (height: number | Falsy) => {
       } else {
         if (value && value.length) {
           setBlockHeaderError(null);
-          if (height !== value[0]) setBlockHeader(createTx(value));
+          if (
+            !blockHeader ||
+            blockHeader.height !== BigNumber.from(value[0]).toString()
+          ) {
+            setBlockHeader(createTx(value));
+          }
         }
       }
     }
