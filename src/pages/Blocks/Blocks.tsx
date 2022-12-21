@@ -141,10 +141,9 @@ const Blocks: React.FC = (props: any) => {
                   ),
                   Merkle_Root: <>{hashPretty(block.merkleRoot)}</>,
                   CID: <>{hashPretty(block.CID)}</>,
-                  Timestamp:
-                    moment
-                      .utc(block.timestamp * 1000)
-                      .format("YYYY-MM-DD HH:mm:ss") + " UTC",
+                  Timestamp: moment
+                    .utc(block.timestamp * 1000)
+                    .format("YYYY-MM-DD HH:mm:ssZZ"),
                 };
               })
             }

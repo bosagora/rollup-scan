@@ -1,88 +1,98 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Col, Container, Row } from "reactstrap";
-import { RouterPathEnum } from "global/routes/RouterPathEnum";
 import { useDispatch, useSelector } from "react-redux";
-import { pageChange } from "store/pagination/thunks";
 import { searchDataUpdater } from "store/header/thunks";
-import { FaSortDown, FaSortUp } from "react-icons/fa";
-import { useTranslation, withTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import moment from "moment";
 import CopyAddressClipboard from "components/CopyAddressClipboard/CopyAddressClipboard";
 import Loader from "components/Loader/Loader";
-import { Amount } from "global/config/config";
 import request from "../../../global/api/request";
-import endpoints from "../../../global/config/urlconfigs";
 import PageHelmet from "../../../components/PageHelmet/PageHelmet";
 import GenericSearchBar from "../../../components/GenericSearchBar/GenericSearchBar";
 import Table from "../../../components/Table/Table";
-import Button from "../../../components/Button/Button";
-import { getPretty } from "../../../global/utils/CalcUtils";
+import { useByHeight } from "../../../hooks/useRollup";
+import { Block } from "rollup-pm-sdk";
+import _ from "lodash";
+import { BigNumber } from "ethers";
+import { formatEther } from "ethers/lib/utils";
 
 const BlockDetails: React.FC = (props: any) => {
   // All states for current screen
   const dispatch = useDispatch();
-  const [showRecord, setTotalRecords] = useState<any>(20);
+  const [showRecord, setShowRecords] = useState<any>(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageCount, setPageCount] = useState(0);
+
   const [loading, setLoading] = useState(false);
-  const [CSVData, setCSVData] = useState([]);
-  const [validators, setValidators] = useState([]);
   const [allData, setAllData] = useState<any>({});
-  const [openValidators, setOpenValidators] = useState(false);
-  // const allData: any = useSelector((state: any) => state.header.singleBlock)
+  const [totalTransactions, setTotalTransactions] = useState([]);
+  const [transactions, setTransactions] = useState([]);
+  const [txVolume, setTxVolume] = useState(BigNumber.from(0));
+  const [currentHeight, setCurrentHeight] = useState(Number.NaN);
+  const { t } = useTranslation();
+
   const searchedData = useSelector((state: any) => state.header.searchedData);
 
-  const validatorsSection = React.useRef<HTMLInputElement>(null);
-  const { t } = useTranslation();
-  // if (
-  //   props.location.state &&
-  //   props.location.state.validatorsSection &&
-  //   validatorsSection.current
-  // ) {
-  //   validatorsSection.current.scrollIntoView({ behavior: "smooth" });
-  // }
+  const blockHeight = useSelector((state: any) => state.header.blockHeight);
 
-  // Get single block detail API call
-  const getBlockData = () => {
-    // if (type === "hash") {
-    //   setLoading(true);
-    // request("GET", `${endpoints.blockDetails}?hash=${hash}`, {})
-    //   .then((res: any) => {
-    //     setAllData(res.data);
-    //     setLoading(false);
-    //   })
-    //   .catch((error: any) => {
-    //     setLoading(false);
-    //     return error;
-    //   });
-    // dispatch(singleBlockDetailsfromHash(hash))
-    // }
-    // if (type === "height") {
-    //   setLoading(true);
-    // request("GET", `${endpoints.blockDetails}?height=${hash}`, {})
-    //   .then((res: any) => {
-    //     setAllData(res.data);
-    //     setLoading(false);
-    //   })
-    //   .catch((error: any) => {
-    //     setLoading(false);
-    //     return error;
-    //   });
-    // dispatch(singleBlockDetailsfromHeight(hash))
-    // }
+  const { blockHeader } = useByHeight(currentHeight);
+
+  useEffect(() => {
+    if (isNaN(currentHeight)) {
+      setCurrentHeight(blockHeight);
+    }
+  }, [blockHeight]);
+
+  useEffect(() => {
+    if (blockHeader) {
+      setAllData(blockHeader);
+      getCIDData();
+    }
+    setLoading(false);
+  }, [blockHeader]);
+
+  const getCIDData = useCallback(() => {
+    if (!blockHeader) return;
+    request("GET", blockHeader.CID, {})
+      .then((res) => {
+        if (res.status === 200) {
+          const block: Block = res.data as Block;
+          if (block?.txs?.length) {
+            const txs = _.sortBy(block.txs, "sequence").reverse();
+            let volume = BigNumber.from(0);
+            txs.forEach((t) => {
+              const amount = BigNumber.from(t.amount);
+              if (t.state === "0") {
+                volume = volume.add(amount);
+              } else {
+                volume = volume.sub(amount);
+              }
+            });
+            setTxVolume(volume);
+            setTotalTransactions(txs);
+            setPageCount(txs.length);
+            setCurrentPage(1);
+          }
+        }
+      })
+      .catch((e) => {
+        console.log("CID request error:", e);
+      });
+  }, [blockHeader]);
+
+  useEffect(() => {
+    if (_.isEmpty(totalTransactions)) return;
+    setTransactions(
+      totalTransactions.slice(
+        (currentPage - 1) * showRecord,
+        showRecord * currentPage
+      )
+    );
+  }, [totalTransactions, currentPage, showRecord]);
+
+  const handlerTxClick = (e) => {
+    console.log(e.Seq.props.children);
   };
-
-  // const pagination = useSelector((state: any) => state.pagination);
-
-  // Show number of records in list function
-  const numberOfRecordShow = (Record: Number) => {
-    //   setTotalRecords(Record);
-    //   setCurrentPage(1);
-  };
-
-  // useEffect(() => {
-  //   setCurrentPage(pagination.pageNumber);
-  // }, [pagination.pageNumber]);
 
   const nodeDetails = (address: any) => {
     //   props.history.push(`${RouterPathEnum.NODE_DETAILS}/${address}`);
@@ -153,100 +163,65 @@ const BlockDetails: React.FC = (props: any) => {
                   </h2>
                 </Col>
               </Row>
-              {/* Single Block Summary section  */}
-              <div className="block-detail">
-                <div className="block-hash">
-                  <div className="item">
-                    <p>{t("Block_Hash")}</p>
-                    <div className="hash-copy copy-address">
-                      {allData.hash ? (
-                        <>
-                          <div className="address no_cursor">
-                            {allData.hash}
-                          </div>
-                          <CopyAddressClipboard
-                            id={allData.hash}
-                            text={allData.hash}
-                          />
-                        </>
-                      ) : (
-                        ""
-                        // <Loader />
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <div className="block-hash">
-                  <div className="item">
-                    <p>{t("Previous_Block_Hash")}</p>
-                    <div className="hash-copy copy-address">
-                      {allData.prev_hash ? (
-                        <>
-                          <div
-                            onClick={() => blockDetails(allData.prev_hash)}
-                            className="link-color address"
-                          >
-                            {allData.prev_hash}
-                          </div>
-                          <CopyAddressClipboard
-                            id={allData.prev_hash}
-                            text={allData.prev_hash}
-                          />
-                        </>
-                      ) : (
-                        ""
-                        // <Loader />
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
               <div className="more-detail">
+                <div className="item">
+                  <p>{t("Block_Hash")}</p>
+                  <div className="values">
+                    <div className="hash-copy copy-address">
+                      {allData?.curBlock && (
+                        <>
+                          {allData.curBlock}
+                          <CopyAddressClipboard
+                            id="allDataMerkleRoot"
+                            text={allData.curBlock}
+                          />
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div className="item">
+                  <p>{t("Previous_Block_Hash")}</p>
+                  <div className="values">
+                    <div className="hash-copy copy-address">
+                      {allData?.prevBlock && (
+                        <>
+                          {allData.prevBlock}
+                          <CopyAddressClipboard
+                            id="allDataMerkleRoot"
+                            text={allData.prevBlock}
+                          />
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
                 <div className="item">
                   <p>{t("Merkle_Root")}</p>
                   <div className="values">
-                    <div className="copy-address max_address">
-                      {allData.merkle_root ? (
+                    <div className="hash-copy copy-address">
+                      {allData?.merkleRoot && (
                         <>
-                          <>
-                            {allData.merkle_root && (
-                              <>
-                                {allData.merkle_root.slice(0, 6) +
-                                  `…` +
-                                  allData.merkle_root.slice(-1 * 6)}
-                              </>
-                            )}
-                          </>
+                          {allData.merkleRoot}
                           <CopyAddressClipboard
                             id="allDataMerkleRoot"
-                            text={allData.merkle_root}
+                            text={allData.merkleRoot}
                           />
                         </>
-                      ) : (
-                        ""
-                        // <Loader />
                       )}
                     </div>
                   </div>
                 </div>
                 <div className="item">
-                  <p>{t("Signature")}</p>
+                  <p>{t("CID")}</p>
                   <div className="values">
-                    <div className="copy-address max_address">
-                      {allData.signature ? (
+                    <div className="hash-copy copy-address">
+                      {allData.CID ? (
                         <>
-                          <>
-                            {allData.signature && (
-                              <>
-                                {allData.signature.slice(0, 6) +
-                                  `…` +
-                                  allData.signature.slice(-1 * 6)}
-                              </>
-                            )}
-                          </>
+                          <>{allData.CID && <>{allData.CID}</>}</>
                           <CopyAddressClipboard
-                            id={allData.signature}
-                            text={allData.signature}
+                            id={allData.CID}
+                            text={allData.CID}
                           />
                         </>
                       ) : (
@@ -256,203 +231,93 @@ const BlockDetails: React.FC = (props: any) => {
                     </div>
                   </div>
                 </div>
-                {/* <div className="item">
-                  <p>{t('Random_Seed')}</p>
-                  <div className="values">
-                    <div className="copy-address max_address">
-                      {allData.random_seed ? (
-                        <>
-                          <>
-                            {allData.random_seed && (
-                              <>
-                                {allData.random_seed.slice(0, 6) +
-                                  `…` +
-                                  allData.random_seed.slice(-1 * 6)}
-                              </>
-                            )}
-                          </>
-                          <CopyAddressClipboard id={allData.random_seed} text={allData.random_seed} />
-                        </>
-                      ) : (
-                        ""
-                        // <Loader />
-                      )}
-                    </div>
-                  </div>
-                </div> */}
                 <div className="item">
                   <p>{t("Timestamp")}</p>
                   <div className="values">
                     {moment
-                      .utc(allData.time * 1000)
-                      .format("YYYY-MM-DD HH:mm:ss")}{" "}
-                    UTC
-                    {/* {moment(allData.time * 1000).fromNow()} &nbsp;&nbsp;{' '}
-                    {moment(allData.time * 1000).format('ll HH:mm:ss')} */}
+                      .utc(allData.timestamp * 1000)
+                      .format("YYYY-MM-DD HH:mm:ssZZ")}
                   </div>
                 </div>
-                <div className="item">
-                  <p>{t("Block_Size")}</p>
-                  <div className="values">
-                    {getPretty(allData.total_size)} {t("Bytes")}
-                  </div>
-                </div>
-                <div className="item">
-                  <p>{t("Total_Reward")}</p>
-                  <div className="values">
-                    {allData.total_reward &&
-                      getPretty(Amount(allData.total_reward))}{" "}
-                    BOA
-                  </div>
-                </div>
-                {/*<div className="item">*/}
-                {/*  <p>{t('Version')}</p>*/}
-                {/*  <div className="values">{allData.version}</div>*/}
-                {/*</div>*/}
                 <div className="item">
                   <p>{t("Number_of_Transactions")}</p>
                   <div className="values">
-                    {getPretty(allData.total_transactions)}
+                    {transactions && transactions.length}
                   </div>
                 </div>
                 <div className="item">
                   <p>{t("Transaction_Volume")}</p>
                   <div className="values">
-                    {allData.tx_volume && getPretty(Amount(allData.tx_volume))}{" "}
-                    BOA
-                  </div>
-                </div>
-                <div className="item">
-                  <p>{t("Total_Fees")}</p>
-                  <div className="values">
-                    {allData.total_fee && getPretty(Amount(allData.total_fee))}{" "}
-                    BOA
-                  </div>
-                </div>
-                <div className="item">
-                  <p>{t("Total_Received")}</p>
-                  <div className="values">
-                    {allData.total_received &&
-                      getPretty(Amount(allData.total_received))}{" "}
-                    BOA
-                  </div>
-                </div>
-                <div className="item">
-                  <p>{t("Total_Sent")}</p>
-                  <div className="values">
-                    {allData.total_sent &&
-                      getPretty(Amount(allData.total_sent))}{" "}
-                    BOA
+                    {txVolume && formatEther(txVolume)} THE9
                   </div>
                 </div>
               </div>
-              {/* Validators list section  */}
-              <div className="validators" ref={validatorsSection}>
-                <div className="header">
-                  <h2>{t("Validators")}</h2>
-                  <Button
-                    onClick={() => setOpenValidators(!openValidators)}
-                    aria-controls="example-fade-text"
-                    aria-expanded={openValidators}
-                  >
-                    {openValidators ? (
-                      <>
-                        {t("Hide_List")}
-                        <FaSortDown className="down" />
-                      </>
-                    ) : (
-                      <>
-                        {t("Show_List")} <FaSortUp className="up" />
-                      </>
-                    )}
-                  </Button>
-                </div>
-                {openValidators && (
+              <div>
+                <Row>
+                  <Col lg={12} md={12} sm={12}>
+                    <h2>{t("Transactions")}</h2>
+                  </Col>
+                </Row>
+                {transactions && (
                   <div className="table-cont">
                     <Table
                       headerData={[
                         {
-                          UTXO_Key: "",
-                          Public_Key: "",
-                          Preimage_Height: "",
-                          Preimage_Hash: "",
-                          Slashing: "",
-                          Signed: "",
+                          Seq: "",
+                          Trade_id: "",
+                          User_Id: "",
+                          Type: "",
+                          Exchange_Id: "",
+                          Amount: "",
+                          Timestamp: "",
                         },
                       ]}
                       headData={
-                        validators &&
-                        validators.map((validators: any, index: number) => {
+                        transactions &&
+                        transactions.map((tx: any) => {
                           return {
-                            UTXO_Key: (
-                              <div className="copy-address max_address">
-                                <div
-                                  onClick={() =>
-                                    transactionOverview(validators.utxo_key)
-                                  }
-                                  className="link-color"
-                                >
-                                  {validators.utxo_key.slice(0, 6) +
-                                    `…` +
-                                    validators.utxo_key.slice(-1 * 6)}
-                                </div>
-                                <CopyAddressClipboard
-                                  text={validators.utxo_key}
-                                  id={validators.utxo_key}
-                                />
-                              </div>
-                            ),
-                            Public_Key: (
-                              <div className="copy-address max_address">
-                                <div
-                                  className="link-color"
-                                  onClick={() =>
-                                    nodeDetails(validators.address)
-                                  }
-                                >
-                                  {validators.address.slice(0, 6) +
-                                    `…` +
-                                    validators.address.slice(-1 * 6)}
-                                </div>
-                                <CopyAddressClipboard
-                                  text={validators.address}
-                                  id={validators.address}
-                                />
-                              </div>
-                            ),
-                            Preimage_Height: (
-                              <>{getPretty(validators.pre_image.height)}</>
-                            ),
-                            Preimage_Hash: (
+                            Seq: <>{tx.sequence}</>,
+                            Trade_id: <>{tx.trade_id}</>,
+                            User_Id: <>{tx.user_id}</>,
+                            Type: (
                               <>
-                                {validators.pre_image.hash.slice(0, 6) +
-                                  `…` +
-                                  validators.pre_image.hash.slice(-1 * 6)}
+                                {t(tx.state === "0" ? "Charge" : "Discharge")}
                               </>
                             ),
-                            Slashing:
-                              validators.slashed === 0 ? t("No") : t("Yes"),
-                            Signed:
-                              validators.block_signed === 0
-                                ? t("No")
-                                : t("Yes"),
+                            Exchange_Id: <>{tx.exchange_id}</>,
+                            Amount: (
+                              <div
+                                className={
+                                  tx.state === "0" ? "charge" : "discharge"
+                                }
+                              >
+                                {formatEther(BigNumber.from(tx.amount)) +
+                                  " THE9"}
+                              </div>
+                            ),
+                            Timestamp: (
+                              <>
+                                {moment
+                                  .utc(tx.timestamp * 1000)
+                                  .format("YYYY-MM-DD HH:mm:ssZZ")}
+                              </>
+                            ),
                           };
                         })
                       }
                       currentPage={currentPage}
                       pageCount={pageCount}
                       loading={loading}
-                      pageChange={(pageNumber: number) =>
-                        dispatch(pageChange(pageNumber))
-                      }
+                      pageChange={(p: number) => setCurrentPage(p)}
                       showRecord={showRecord}
                       props={props}
-                      data={validators}
-                      CSVData={CSVData}
+                      data={transactions}
                       fileName={"Validators List.csv"}
-                      numberOfRecordShow={(Record: number) =>
-                        numberOfRecordShow(Record)
-                      }
+                      numberOfRecordShow={(Record: number) => {
+                        setShowRecords(Record);
+                        setCurrentPage(1);
+                      }}
+                      onClick={handlerTxClick}
                     />
                   </div>
                 )}
