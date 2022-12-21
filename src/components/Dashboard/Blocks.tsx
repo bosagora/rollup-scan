@@ -59,11 +59,11 @@ const BlocksBox: React.FC<BlockProps> = (props: BlockProps) => {
                     <td>
                       <div
                         className="link-color"
-                        onClick={() =>
-                          changeRoute(
-                            `${RouterPathEnum.BLOCKS_DETAILS}/height:${item.height}`
-                          )
-                        }
+                        // onClick={() =>
+                        //   changeRoute(
+                        //     `${RouterPathEnum.BLOCKS_DETAILS}/height:${item.height}`
+                        //   )
+                        // }
                       >
                         {getPretty(item.height)}
                       </div>
