@@ -38,10 +38,6 @@ const Blocks: React.FC = (props: any) => {
   );
 
   useEffect(() => {
-    console.log("BLOCKS page: change block height", blockHeight);
-  }, [blockHeight]);
-
-  useEffect(() => {
     // console.log("headers", blocksHeader);
     setBlocksData(blocksHeader);
     setPageCount(blockHeight);

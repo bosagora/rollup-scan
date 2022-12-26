@@ -35,10 +35,6 @@ const Dashboard: React.FC = () => {
   const blockHeight = useSelector((state: any) => state.header.blockHeight);
   const { blocksHeader } = useByFromHeight(blockHeight, 10);
 
-  useEffect(() => {
-    console.log("changeHeight", blockHeight);
-  }, [blockHeight]);
-
   const getCIDData = useCallback(async () => {
     if (!blocksHeader) return;
     let data = [];
