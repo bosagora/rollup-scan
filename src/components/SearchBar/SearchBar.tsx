@@ -1,19 +1,14 @@
-import React, { ReactNode, useState } from "react";
+import React, { useState } from "react";
 import { Button, Input, InputGroup } from "reactstrap";
 import { AiOutlineSearch } from "react-icons/ai";
 import "./SearchBar.scss";
-import {
-  useTranslation,
-  withTranslation,
-  WithTranslation,
-} from "react-i18next";
+import { useTranslation } from "react-i18next";
 import endpoints from "../../global/config/urlconfigs";
 import request from "../../global/api/request";
 import { RouterPathEnum } from "global/routes/RouterPathEnum";
 import { useNavigate } from "react-router-dom";
 
-export interface SearchBarProps extends WithTranslation {
-  children?: ReactNode;
+export interface SearchBarProps {
   onClick?: () => void;
   searchedDataGet: Function;
   searchedData: {
@@ -24,9 +19,7 @@ export interface SearchBarProps extends WithTranslation {
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({
-  children,
   onClick,
-  i18n,
   searchedDataGet,
   searchedData,
 }) => {
@@ -113,4 +106,4 @@ const SearchBar: React.FC<SearchBarProps> = ({
   );
 };
 
-export default withTranslation()(SearchBar);
+export default React.memo(SearchBar);

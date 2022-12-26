@@ -94,6 +94,11 @@ const Table: React.FC<TableProps> = ({
   const getRowsData = () => {
     const items = headData ? headData : [];
     const keys = getKeys();
+    const click = (row) => {
+      if (onClick) {
+        onClick(row);
+      }
+    };
     return loading ? (
       <tr className="no-data">
         <td>
@@ -109,7 +114,7 @@ const Table: React.FC<TableProps> = ({
     ) : (
       items.map((row, index) => {
         return (
-          <tr key={index} onClick={() => onClick(row)}>
+          <tr key={index} onClick={click}>
             <RenderRow key={index} data={row} keys={keys} />
           </tr>
         );

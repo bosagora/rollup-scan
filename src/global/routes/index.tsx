@@ -24,11 +24,15 @@ const RoutesPage: React.FC = () => {
           path={RouterPathEnum.TRANSACTION_OVERVIEW}
           element={<TransactionOverview />}
         />
+        <Route path={RouterPathEnum.BLOCKS} element={<Blocks />} />
         <Route
           path={RouterPathEnum.BLOCKS_DETAILS}
           element={<BlockDetails />}
         />
-        <Route path={RouterPathEnum.BLOCKS} element={<Blocks />} />
+        <Route
+          path={RouterPathEnum.BLOCKS_DETAILS + "/:height"}
+          element={<BlockDetails />}
+        />
         <Route path="*" element={<PageNotFound />} />
       </Route>
     </Routes>
