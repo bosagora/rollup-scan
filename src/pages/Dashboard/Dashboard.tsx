@@ -6,7 +6,6 @@ import transactionIcon from "assets/images/transaction.svg";
 import circulate from "assets/images/circulate.svg";
 import { ReactSVG } from "react-svg";
 import { useTranslation, withTranslation } from "react-i18next";
-import { searchDataUpdater } from "store/header/thunks";
 import "moment/locale/ko";
 import { getPretty } from "../../global/utils/CalcUtils";
 import BlocksBox from "../../components/Dashboard/Blocks";
@@ -22,7 +21,6 @@ const Dashboard: React.FC = () => {
   // states for current screen
   const dispatch = useDispatch();
   const { t } = useTranslation();
-  const searchedData = useSelector((state: any) => state.header.searchedData);
 
   const [blockLoading, setBlockLoading] = useState(false);
   const [transactionLoading, setTransactionLoading] = useState(false);
@@ -89,12 +87,7 @@ const Dashboard: React.FC = () => {
           <Row>
             <Col xl={12} lg={12}>
               <h1>{t("the_9_rollup_explorer")}</h1>
-              <SearchBar
-                searchedDataGet={(searchId: any) =>
-                  dispatch(searchDataUpdater(searchId))
-                }
-                searchedData={searchedData}
-              />
+              <SearchBar />
             </Col>
           </Row>
         </Container>

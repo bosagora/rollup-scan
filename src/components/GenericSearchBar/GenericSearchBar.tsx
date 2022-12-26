@@ -3,9 +3,8 @@ import { Button, Input, InputGroup } from "reactstrap";
 import { AiOutlineSearch } from "react-icons/ai";
 import "./GenericSearchBar.scss";
 import { useTranslation } from "react-i18next";
-import endpoints from "../../global/config/urlconfigs";
-import request from "../../global/api/request";
 import { RouterPathEnum } from "global/routes/RouterPathEnum";
+import { useNavigate } from "react-router-dom";
 
 export interface GenericSearchBarProps {
   children?: ReactNode;
@@ -27,22 +26,9 @@ const GenericSearchBar: React.FC<GenericSearchBarProps> = ({
 }) => {
   let btn: any;
   const { t } = useTranslation();
-  const [search, setSearch] = useState(""),
-    [error, setError] = useState("");
-
-  // Method to validate hash and decide to redirect to block or transcation
-  const validateHash = () => {
-    return new Promise((resolve, reject) => {
-      request("GET", `${endpoints.searchHash + search}`, {})
-        .then((res: any) => {
-          resolve(res.data);
-        })
-        .catch((err: any) => {
-          return err;
-        });
-    });
-  };
-
+  const [search, setSearch] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
   const showError = (error: string) => {
     setError(error);
     setTimeout(() => {
@@ -51,30 +37,16 @@ const GenericSearchBar: React.FC<GenericSearchBarProps> = ({
   };
 
   const searchSubmit = () => {
+    console.log("Search", search);
     if (search) {
-      searchedDataGet(search).then((res: any) => {
-        let reg = /^[0-9\b]+$/;
-        let matchAddress = search.match("boa");
-        let matchBlockHash = search.match("0x");
-        if (matchAddress) {
-        } else if (reg.test(search)) {
-          history.push(`${RouterPathEnum.BLOCKS_DETAILS}/height:${search}`);
-        } else if (matchBlockHash) {
-          validateHash()
-            .then((res: any) => {
-              if (res.block || !res) {
-                history.push(`${RouterPathEnum.BLOCKS_DETAILS}/hash:${search}`);
-              } else {
-                history.push(
-                  `${RouterPathEnum.TRANSACTION_OVERVIEW}/${search}`
-                );
-              }
-            })
-            .catch(() => {
-              showError("Invalid_Hash");
-            });
-        }
-      });
+      let reg = /^[0-9\b]+$/;
+      let matchBlockHash = search.match("0x");
+      if (reg.test(search)) {
+        navigate(`${RouterPathEnum.BLOCKS_DETAILS}/${search}`);
+      } else if (matchBlockHash) {
+      } else {
+        showError(t("searchMsg"));
+      }
     }
   };
 
