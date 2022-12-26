@@ -28,6 +28,7 @@ const BlockDetails: React.FC = (props: any) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageCount, setPageCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [txLoading, setTxLoading] = useState(true);
   const [allData, setAllData] = useState<any>({});
   const [totalTransactions, setTotalTransactions] = useState([]);
   const [transactions, setTransactions] = useState([]);
@@ -37,7 +38,7 @@ const BlockDetails: React.FC = (props: any) => {
 
   const searchedData = useSelector((state: any) => state.header.searchedData);
   const blockHeight = useSelector((state: any) => state.header.blockHeight);
-  const { blockHeader } = useByHeight(currentHeight);
+  const { blockHeader, blockHeaderError } = useByHeight(currentHeight);
   const navigator = useNavigate();
 
   useEffect(() => {
@@ -49,10 +50,14 @@ const BlockDetails: React.FC = (props: any) => {
   }, []);
 
   useEffect(() => {
+    console.log("heightChange", height);
     if (height) {
       if (Number(height)) {
         setCurrentHeight(Number(height));
       }
+    } else {
+      if (blockHeight)
+        navigator(`${RouterPathEnum.BLOCKS_DETAILS}/${blockHeight}`);
     }
   }, [height]);
 
@@ -66,12 +71,21 @@ const BlockDetails: React.FC = (props: any) => {
   useEffect(() => {
     if (blockHeader) {
       setAllData(blockHeader);
+      setLoading(false);
       getCIDData();
     }
   }, [blockHeader]);
 
+  useEffect(() => {
+    if (blockHeaderError) {
+      setAllData({});
+      setLoading(false);
+    }
+  }, [blockHeaderError]);
+
   const getCIDData = useCallback(() => {
     if (!blockHeader) return;
+    setTxLoading(true);
     request("GET", blockHeader.CID, {})
       .then((res) => {
         if (res.status === 200) {
@@ -93,10 +107,10 @@ const BlockDetails: React.FC = (props: any) => {
             setCurrentPage(1);
           }
         }
-        setLoading(false);
+        setTxLoading(false);
       })
       .catch((e) => {
-        setLoading(false);
+        setTxLoading(false);
         console.log("CID request error:", e);
       });
   }, [blockHeader]);
@@ -163,8 +177,11 @@ const BlockDetails: React.FC = (props: any) => {
               <Loader />
             </div>
           ) : Object.keys(allData).length === 0 ? (
-            <div className="no_record">
-              <h2>{t("NoRecord")}</h2>
+            <div
+              className="no_record
+            "
+            >
+              <h2>{t("Invalid_block")}</h2>
             </div>
           ) : (
             <>
@@ -328,7 +345,7 @@ const BlockDetails: React.FC = (props: any) => {
                         }
                         currentPage={currentPage}
                         pageCount={pageCount}
-                        loading={loading}
+                        loading={txLoading}
                         pageChange={(p: number) => setCurrentPage(p)}
                         showRecord={showRecord}
                         props={props}

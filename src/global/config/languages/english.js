@@ -371,4 +371,5 @@ export const english = {
   Mins: "mins ",
   Sec: "sec ",
   Secs: "secs ",
+  Invalid_block: "Missing or invalid block.",
 };
