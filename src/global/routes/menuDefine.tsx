@@ -1,12 +1,9 @@
 import { RouterPathEnum } from "./RouterPathEnum";
-import PageNotFound from "../../pages/PageNotFound/PageNotFound";
-import Transactions from "../../pages/Transactions/Transactions";
+import transactions from "../../pages/Transactions/Transactions";
 import BlockDetails from "../../pages/Blocks/BlockDetails/BlockDetails";
 import Dashboard from "../../pages/Dashboard/Dashboard";
-import TransactionOverview from "../../pages/Transactions/TransactionOverview/TransactionOverview";
-import SearchDetails from "../../pages/SearchDetails/SearchDetails";
-import transactions from "../../pages/Transactions/Transactions";
 import dashboard from "../../pages/Dashboard/Dashboard";
+import SearchDetails from "../../pages/SearchDetails/SearchDetails";
 import Blocks from "../../pages/Blocks/Blocks";
 import blocks from "../../pages/Blocks/Blocks";
 

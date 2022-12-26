@@ -1,5 +1,4 @@
 import Loader from "../Loader/Loader";
-import { RouterPathEnum } from "../../global/routes/RouterPathEnum";
 import { getPretty, hashPretty } from "../../global/utils/CalcUtils";
 import { Link, useNavigate } from "react-router-dom";
 import React from "react";
@@ -7,6 +6,8 @@ import { useTranslation } from "react-i18next";
 import { headerClassUpdater } from "../../store/header/thunks";
 import { useDispatch } from "react-redux";
 import moment from "moment";
+import { pageChange } from "../../store/pagination/thunks";
+import { RouterPathEnum } from "../../global/routes/RouterPathEnum";
 
 interface BlockProps {
   data?: any;
@@ -59,11 +60,11 @@ const BlocksBox: React.FC<BlockProps> = (props: BlockProps) => {
                     <td>
                       <div
                         className="link-color"
-                        // onClick={() =>
-                        //   changeRoute(
-                        //     `${RouterPathEnum.BLOCKS_DETAILS}/height:${item.height}`
-                        //   )
-                        // }
+                        onClick={() =>
+                          changeRoute(
+                            `${RouterPathEnum.BLOCKS_DETAILS}/${item.height}`
+                          )
+                        }
                       >
                         {getPretty(item.height)}
                       </div>
@@ -83,7 +84,9 @@ const BlocksBox: React.FC<BlockProps> = (props: BlockProps) => {
         </table>
       </div>
       <div className="bt-bottom">
-        <Link to="/blocks">{t("View_All_Blocks")}</Link>
+        <Link onClick={() => dispatch(pageChange(1))} to="/blocks">
+          {t("View_All_Blocks")}
+        </Link>
       </div>
     </div>
   );

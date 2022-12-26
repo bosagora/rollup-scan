@@ -15,31 +15,51 @@ import { Block } from "rollup-pm-sdk";
 import _ from "lodash";
 import { BigNumber } from "ethers";
 import { formatEther } from "ethers/lib/utils";
+import TransactionDetails from "./TransactionDetails";
+import { useNavigate, useParams } from "react-router-dom";
+import { RouterPathEnum } from "../../../global/routes/RouterPathEnum";
 
 const BlockDetails: React.FC = (props: any) => {
   // All states for current screen
   const dispatch = useDispatch();
+  const { t } = useTranslation();
+  const { height } = useParams();
   const [showRecord, setShowRecords] = useState<any>(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageCount, setPageCount] = useState(0);
-
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [allData, setAllData] = useState<any>({});
   const [totalTransactions, setTotalTransactions] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [txVolume, setTxVolume] = useState(BigNumber.from(0));
   const [currentHeight, setCurrentHeight] = useState(Number.NaN);
-  const { t } = useTranslation();
+  const [selectTx, setSelectTx] = useState(null);
 
   const searchedData = useSelector((state: any) => state.header.searchedData);
-
   const blockHeight = useSelector((state: any) => state.header.blockHeight);
-
   const { blockHeader } = useByHeight(currentHeight);
+  const navigator = useNavigate();
 
   useEffect(() => {
-    if (isNaN(currentHeight)) {
-      setCurrentHeight(blockHeight);
+    if (_.isEmpty(height) && blockHeight) {
+      navigator(`${RouterPathEnum.BLOCKS_DETAILS}/${blockHeight}`);
+    } else {
+      setCurrentHeight(Number(height));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (height) {
+      if (Number(height)) {
+        setCurrentHeight(Number(height));
+      }
+    }
+  }, [height]);
+
+  useEffect(() => {
+    if (!blockHeight) return;
+    if (_.isEmpty(height)) {
+      navigator(`${RouterPathEnum.BLOCKS_DETAILS}/${blockHeight}`);
     }
   }, [blockHeight]);
 
@@ -48,7 +68,6 @@ const BlockDetails: React.FC = (props: any) => {
       setAllData(blockHeader);
       getCIDData();
     }
-    setLoading(false);
   }, [blockHeader]);
 
   const getCIDData = useCallback(() => {
@@ -74,8 +93,10 @@ const BlockDetails: React.FC = (props: any) => {
             setCurrentPage(1);
           }
         }
+        setLoading(false);
       })
       .catch((e) => {
+        setLoading(false);
         console.log("CID request error:", e);
       });
   }, [blockHeader]);
@@ -91,21 +112,12 @@ const BlockDetails: React.FC = (props: any) => {
   }, [totalTransactions, currentPage, showRecord]);
 
   const handlerTxClick = (e) => {
-    console.log(e.Seq.props.children);
-  };
-
-  const nodeDetails = (address: any) => {
-    //   props.history.push(`${RouterPathEnum.NODE_DETAILS}/${address}`);
-  };
-
-  const blockDetails = (hash: string) => {
-    //   props.history.push(`${RouterPathEnum.BLOCKS_DETAILS}/hash:${hash}`);
-  };
-
-  const transactionOverview = (utxoKey: string) => {
-    //   props.history.push(`${RouterPathEnum.TRANSACTION_OVERVIEW}/${utxoKey}`, {
-    //     utxoKey: true,
-    //   });
+    const seq = e.Seq.props.children;
+    setSelectTx(
+      _.find(totalTransactions, (t) => {
+        return t.sequence === seq;
+      })
+    );
   };
 
   return (
@@ -252,76 +264,86 @@ const BlockDetails: React.FC = (props: any) => {
                   </div>
                 </div>
               </div>
-              <div>
-                <Row>
-                  <Col lg={12} md={12} sm={12}>
-                    <h2>{t("Transactions")}</h2>
-                  </Col>
-                </Row>
-                {transactions && (
-                  <div className="table-cont">
-                    <Table
-                      headerData={[
-                        {
-                          Seq: "",
-                          Trade_id: "",
-                          User_Id: "",
-                          Type: "",
-                          Exchange_Id: "",
-                          Amount: "",
-                          Timestamp: "",
-                        },
-                      ]}
-                      headData={
-                        transactions &&
-                        transactions.map((tx: any) => {
-                          return {
-                            Seq: <>{tx.sequence}</>,
-                            Trade_id: <>{tx.trade_id}</>,
-                            User_Id: <>{tx.user_id}</>,
-                            Type: (
-                              <>
-                                {t(tx.state === "0" ? "Charge" : "Discharge")}
-                              </>
-                            ),
-                            Exchange_Id: <>{tx.exchange_id}</>,
-                            Amount: (
-                              <div
-                                className={
-                                  tx.state === "0" ? "charge" : "discharge"
-                                }
-                              >
-                                {formatEther(BigNumber.from(tx.amount)) +
-                                  " THE9"}
-                              </div>
-                            ),
-                            Timestamp: (
-                              <>
-                                {moment
-                                  .utc(tx.timestamp * 1000)
-                                  .format("YYYY-MM-DD HH:mm:ssZZ")}
-                              </>
-                            ),
-                          };
-                        })
-                      }
-                      currentPage={currentPage}
-                      pageCount={pageCount}
-                      loading={loading}
-                      pageChange={(p: number) => setCurrentPage(p)}
-                      showRecord={showRecord}
-                      props={props}
-                      data={transactions}
-                      fileName={"Validators List.csv"}
-                      numberOfRecordShow={(Record: number) => {
-                        setShowRecords(Record);
-                        setCurrentPage(1);
-                      }}
-                      onClick={handlerTxClick}
-                    />
-                  </div>
-                )}
-              </div>
+
+              {selectTx ? (
+                <TransactionDetails
+                  tx={selectTx}
+                  goBack={() => {
+                    setSelectTx(null);
+                  }}
+                />
+              ) : (
+                <div>
+                  <Row>
+                    <Col lg={12} md={12} sm={12}>
+                      <h2>{t("Transactions")}</h2>
+                    </Col>
+                  </Row>
+                  {transactions && (
+                    <div className="table-cont">
+                      <Table
+                        headerData={[
+                          {
+                            Seq: "",
+                            Trade_id: "",
+                            User_Id: "",
+                            Type: "",
+                            Exchange_Id: "",
+                            Amount: "",
+                            Timestamp: "",
+                          },
+                        ]}
+                        headData={
+                          transactions &&
+                          transactions.map((tx: any) => {
+                            return {
+                              Seq: <>{tx.sequence}</>,
+                              Trade_id: <>{tx.trade_id}</>,
+                              User_Id: <>{tx.user_id}</>,
+                              Type: (
+                                <>
+                                  {t(tx.state === "0" ? "Charge" : "Discharge")}
+                                </>
+                              ),
+                              Exchange_Id: <>{tx.exchange_id}</>,
+                              Amount: (
+                                <div
+                                  className={
+                                    tx.state === "0" ? "charge" : "discharge"
+                                  }
+                                >
+                                  {formatEther(BigNumber.from(tx.amount)) +
+                                    " THE9"}
+                                </div>
+                              ),
+                              Timestamp: (
+                                <>
+                                  {moment
+                                    .utc(tx.timestamp * 1000)
+                                    .format("YYYY-MM-DD HH:mm:ssZZ")}
+                                </>
+                              ),
+                            };
+                          })
+                        }
+                        currentPage={currentPage}
+                        pageCount={pageCount}
+                        loading={loading}
+                        pageChange={(p: number) => setCurrentPage(p)}
+                        showRecord={showRecord}
+                        props={props}
+                        data={transactions}
+                        fileName={"Validators List.csv"}
+                        numberOfRecordShow={(Record: number) => {
+                          setShowRecords(Record);
+                          setCurrentPage(1);
+                        }}
+                        onClick={handlerTxClick}
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
             </>
           )}
         </Container>

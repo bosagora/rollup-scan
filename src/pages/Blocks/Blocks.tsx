@@ -12,12 +12,14 @@ import GenericSearchBar from "../../components/GenericSearchBar/GenericSearchBar
 import Table from "../../components/Table/Table";
 import { getPretty, hashPretty } from "../../global/utils/CalcUtils";
 import { useByFromHeight } from "../../hooks/useRollup";
+import { useNavigate } from "react-router-dom";
 
 const Blocks: React.FC = (props: any) => {
   // All states for current screen
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [showRecord, setTotalRecords] = useState<any>(10);
-  const [currentPage, setCurrentPage] = useState(1);
+
   const [pageCount, setPageCount] = useState(1);
   const [blocksData, setBlocksData] = useState<any>([]);
   // const [blocks, setBlocks] = useState<any>([]);
@@ -29,6 +31,7 @@ const Blocks: React.FC = (props: any) => {
   const searchedData = useSelector((state: any) => state.header.searchedData);
   const pageNumber = useSelector((state: any) => state.pagination.pageNumber);
 
+  const [currentPage, setCurrentPage] = useState(pageNumber);
   const { blocksHeader } = useByFromHeight(
     blockHeight - (pageNumber - 1) * showRecord,
     showRecord
@@ -57,22 +60,8 @@ const Blocks: React.FC = (props: any) => {
     dispatch(pageChange(pageNumber));
   };
 
-  // useEffect(() => {
-  //   if (blocks) {
-  //     let blockNewData = blocks.concat(blocksData);
-  //     setBlocksData(blockNewData);
-  //     if (blockNewData.length > showRecord) {
-  //       blockNewData.pop();
-  //     }
-  //   }
-  // }, [blocks]);
-
   const blockDetails = (hash: string, type: string) => {
-    if (type === "hash") {
-      props.history.push(`${RouterPathEnum.BLOCKS_DETAILS}/hash:${hash}`);
-    } else {
-      props.history.push(`${RouterPathEnum.BLOCKS_DETAILS}/height:${hash}`);
-    }
+    navigate(`${RouterPathEnum.BLOCKS_DETAILS}/${hash}`);
   };
 
   return (

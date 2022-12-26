@@ -11,8 +11,6 @@ import { pageSizeChange } from "store/paginationSize/thunks";
 import moment from "moment";
 import { useTranslation } from "react-i18next";
 // import socketIOClient from 'socket.io-client'
-import endpoints from "../../global/config/urlconfigs";
-import request from "../../global/api/request";
 import CopyAddressClipboard from "components/CopyAddressClipboard/CopyAddressClipboard";
 import { Amount } from "global/config/config";
 import PageHelmet from "../../components/PageHelmet/PageHelmet";
@@ -20,7 +18,6 @@ import GenericSearchBar from "../../components/GenericSearchBar/GenericSearchBar
 import Table from "../../components/Table/Table";
 import { getPretty } from "../../global/utils/CalcUtils";
 
-var bigDecimal = require("js-big-decimal");
 // interface IMyProps {
 //   store?: any
 //   data?: any
@@ -43,15 +40,14 @@ const Transactions: React.FC = (props: any) => {
     [showRecord, setTotalRecords] = useState<any>(20),
     [currentPage, setCurrentPage] = useState(1),
     // [page, setpage] = useState('10'),
-    [pageCount, setPageCount] = useState(0),
+    [pageCount] = useState(0),
     [loading, setLoading] = useState(false),
     searchedData = useSelector((state: any) => state.header.searchedData),
     // const output = useSelector((state: any) => state.output.output);
     pagination = useSelector((state: any) => state.pagination),
     // paginationSize = useSelector((state: any) => state.paginationSize),
     // [transaction, setTransaction] = useState<any>([]),
-    [CSVData, setCSVData] = useState([]),
-    [transactionsData, setTransactionsData] = useState<any>([]);
+    [transactionsData] = useState<any>([]);
 
   const { t } = useTranslation();
   // useEffect(() => {
@@ -228,7 +224,6 @@ const Transactions: React.FC = (props: any) => {
             pageCount={pageCount}
             showRecord={showRecord}
             data={transactionsData}
-            CSVData={CSVData}
             numberOfRecordShow={(Record: number) => numberOfRecordShow(Record)}
             fileName={"Transactions List.csv"}
           />

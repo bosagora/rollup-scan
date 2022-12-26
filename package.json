@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@ethersproject/units": "^5.7.0",
+    "@react-icons/all-files": "^4.1.0",
     "@reduxjs/toolkit": "^1.9.1",
     "@typechain/ethers-v5": "^10.2.0",
     "@types/jest": "^26.0.15",
@@ -32,7 +33,7 @@
     "react-dom": "^18.2.0",
     "react-helmet": "^6.1.0",
     "react-i18next": "^12.1.1",
-    "react-icons": "^4.2.0",
+    "react-icons": "^4.7.1",
     "react-js-pagination": "^3.0.3",
     "react-redux": "^7.2.9",
     "react-router-dom": "^6.4.5",

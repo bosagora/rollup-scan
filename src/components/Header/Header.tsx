@@ -19,6 +19,8 @@ import { ReactSVG } from "react-svg";
 import { useDispatch, useSelector } from "react-redux";
 import github from "assets/images/github.svg";
 import { headerClassUpdater } from "../../store/header/thunks";
+import { RouterPathEnum } from "../../global/routes/RouterPathEnum";
+import { pageChange } from "../../store/pagination/thunks";
 
 const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -69,6 +71,7 @@ const Header: React.FC = () => {
     if (hideNav) {
       toggle();
     }
+    if (route === RouterPathEnum.BLOCKS) dispatch(pageChange(1));
     if (route === "/") {
       dispatch(headerClassUpdater("newclass", "layout-home"));
     } else {
