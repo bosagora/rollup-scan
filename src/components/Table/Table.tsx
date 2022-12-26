@@ -114,7 +114,7 @@ const Table: React.FC<TableProps> = ({
     ) : (
       items.map((row, index) => {
         return (
-          <tr key={index} onClick={click}>
+          <tr key={index} onClick={() => click(row)}>
             <RenderRow key={index} data={row} keys={keys} />
           </tr>
         );

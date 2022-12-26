@@ -79,6 +79,16 @@ const Header: React.FC = () => {
     }
   };
 
+  const getActive = (path: string) => {
+    let cls = "nav-link nav-links";
+    if (activeTab === path) {
+      cls += " nav-lin";
+    } else if (path.includes("details") && activeTab.includes("details")) {
+      cls += " nav-lin";
+    }
+    return cls;
+  };
+
   return (
     <>
       <div className="Desktop-Header">
@@ -109,11 +119,7 @@ const Header: React.FC = () => {
                       <NavItem key={index}>
                         <NavLink
                           to={route.path}
-                          className={
-                            activeTab === route.path
-                              ? "nav-link nav-links nav-lin"
-                              : "nav-link nav-links "
-                          }
+                          className={getActive(route.path)}
                           onClick={() => updateHeaderColor(route.path)}
                         >
                           <>

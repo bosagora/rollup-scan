@@ -23,7 +23,7 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = (
         <Col lg={12} md={12} sm={12} className="mt-4">
           <h4 onClick={goBack} style={{ cursor: "pointer" }}>
             <FiDelete size="24" className="mr-3" />
-            {t("Transaction Details")}
+            {t("Transaction Details")} {tx.sequence && <>#{tx.sequence}</>}
           </h4>
         </Col>
       </Row>
