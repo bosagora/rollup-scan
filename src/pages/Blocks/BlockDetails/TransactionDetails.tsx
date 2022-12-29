@@ -6,6 +6,7 @@ import { Transaction } from "rollup-pm-sdk";
 import { BigNumber } from "ethers";
 import { Button, Col, Row } from "reactstrap";
 import { FiDelete } from "@react-icons/all-files/fi/FiDelete";
+import { FiArrowLeft } from "@react-icons/all-files/fi/FiArrowLeft";
 
 export interface TransactionDetailsProps {
   tx?: Transaction;
@@ -18,7 +19,7 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = (
   const { tx, goBack } = props;
 
   return (
-    <div>
+    <div className="transactions">
       <Row>
         <Col lg={12} md={12} sm={12} className="mt-4">
           <h4 onClick={goBack} style={{ cursor: "pointer" }}>
@@ -63,7 +64,13 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = (
         </div>
         <div className="item">
           <p>{t("Amount")}</p>
-          <div className="values">{formatEther(BigNumber.from(tx.amount))}</div>
+          <div className="values">
+            <div className="amount">
+              <span className={tx.state === "0" ? "plus" : "minus"}>
+                {formatEther(BigNumber.from(tx.amount))} THE9
+              </span>
+            </div>
+          </div>
         </div>
         <div className="item">
           <p>{t("Timestamp")}</p>
@@ -97,7 +104,10 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = (
         </div>
       </div>
       <div className="bt-bottom">
-        <Button onClick={goBack}>{t("Back to list")}</Button>
+        <Button onClick={goBack}>
+          <FiArrowLeft />
+          {t("Back to list")}
+        </Button>
       </div>
     </div>
   );

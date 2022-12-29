@@ -2475,6 +2475,23 @@ h2 {
       }
       .values {
         width: 70%;
+        .amount {
+          span {
+            border-radius: 0.25rem;
+            padding: 5px 10px;
+            font-weight: 500;
+            min-width: 140px;
+            text-align: right;
+          }
+          .plus {
+            background-color: #e8f8ef;
+            color: #50bd60;
+          }
+          .minus {
+            color: #d93b30;
+            background-color: #f5d9d7;
+          }
+        }
       }
     }
     .item:first-child {
