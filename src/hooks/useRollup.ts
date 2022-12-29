@@ -115,7 +115,7 @@ export const useByHeight = (height: number | Falsy) => {
 
   const res: any =
     useCall(
-      height && {
+      !_.isNil(height) && {
         contract: rollup,
         method: "getByHeight",
         args: [height],
