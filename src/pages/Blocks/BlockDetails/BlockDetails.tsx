@@ -80,7 +80,7 @@ const BlockDetails: React.FC = (props: any) => {
   }, []);
 
   useEffect(() => {
-    if (height) {
+    if (!_.isNil(height)) {
       if (height.match("0x")) {
         setCurrentHash(height);
         setSearchType(SEARCH_TYPE.HASH);
@@ -96,7 +96,7 @@ const BlockDetails: React.FC = (props: any) => {
 
   useEffect(() => {
     if (!blockHeight) return;
-    if (_.isEmpty(height)) {
+    if (_.isNil(height)) {
       navigate(`${RouterPathEnum.BLOCKS_DETAILS}/${blockHeight}`);
     }
   }, [blockHeight]);
