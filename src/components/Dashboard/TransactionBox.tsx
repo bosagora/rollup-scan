@@ -4,6 +4,8 @@ import Loader from "../Loader/Loader";
 import moment from "moment/moment";
 import { Transaction } from "rollup-pm-sdk";
 import { Amount } from "../../global/config/config";
+import { RouterPathEnum } from "../../global/routes/RouterPathEnum";
+import { useNavigate } from "react-router-dom";
 
 interface TransactionProps {
   data?: Transaction[];
@@ -13,14 +15,14 @@ interface TransactionProps {
 const TransactionBox: React.FC<TransactionProps> = (
   props: TransactionProps
 ) => {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   const { t } = useTranslation();
 
   const { data, isLoading } = props;
 
-  // const transactionOverview = (hash: string) => {
-  //   navigate(`${RouterPathEnum.TRANSACTION_OVERVIEW}/${hash}`);
-  // };
+  const transactionOverview = (height: string) => {
+    navigate(`${RouterPathEnum.BLOCKS_DETAILS}/${height}`);
+  };
 
   return (
     <div className="transactions">
@@ -57,7 +59,7 @@ const TransactionBox: React.FC<TransactionProps> = (
                     <td>
                       <div
                         className="link-color"
-                        // onClick={() => transactionOverview(item.sequence)}
+                        onClick={() => transactionOverview(item.height)}
                       >
                         {item.sequence}
                       </div>
