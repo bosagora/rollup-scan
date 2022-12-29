@@ -41,7 +41,12 @@ const Dashboard: React.FC = () => {
       if (res.status === 200) {
         const block: Block = res.data as Block;
         if (block?.txs?.length) {
-          const txs = _.sortBy(block.txs, "sequence").reverse();
+          const txs = _.sortBy(block.txs, "sequence")
+            .reverse()
+            .map((t: any) => {
+              t.height = h.height;
+              return t;
+            });
           data = _.concat(data, txs);
           if (data.length < 10) {
             continue;
