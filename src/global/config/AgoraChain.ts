@@ -48,6 +48,7 @@ export const getChainConfig = (): Config => {
       },
       networks: [AgoraTestnet],
       autoConnect: true,
+      refresh: "never",
     };
   } else {
     config = {
@@ -57,6 +58,7 @@ export const getChainConfig = (): Config => {
       },
       networks: [AgoraMainnet],
       autoConnect: true,
+      refresh: "never",
     };
   }
   return config;

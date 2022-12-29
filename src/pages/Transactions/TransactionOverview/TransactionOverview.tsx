@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Col, Container, Row } from "reactstrap";
-import { useDispatch, useSelector } from "react-redux";
-import { searchDataUpdater } from "store/header/thunks";
+import { useSelector } from "react-redux";
 import { GoArrowRight } from "react-icons/go";
 import { RouterPathEnum } from "global/routes/RouterPathEnum";
 import moment from "moment";
@@ -25,10 +24,8 @@ interface MarketCapStats {
 
 const TransactionOverview: React.FC = (props: any) => {
   // All states for current screen
-  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [allData] = useState<any>([]);
-  const searchedData = useSelector((state: any) => state.header.searchedData);
   const hash = props.match.params["hash"];
   const marketCapStats: MarketCapStats = useSelector(
     (state: any) => state.header.marketCapStats
@@ -127,13 +124,7 @@ const TransactionOverview: React.FC = (props: any) => {
               <div className="top-header">
                 <div className="left"></div>
                 <div className="right">
-                  <GenericSearchBar
-                    history={props.history}
-                    searchedDataGet={(searchid: any) =>
-                      dispatch(searchDataUpdater(searchid))
-                    }
-                    searchedData={searchedData}
-                  />
+                  <GenericSearchBar />
                 </div>
               </div>
             </Col>

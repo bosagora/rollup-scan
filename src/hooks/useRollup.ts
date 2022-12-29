@@ -17,11 +17,14 @@ export const useLastHeight = () => {
   const [height, setHeight] = useState(Number.NaN);
   const [heightError, setHeightError] = useState(null);
 
-  const res: any = useCall({
-    contract: rollup,
-    method: "getLastHeight",
-    args: [],
-  });
+  const res: any = useCall(
+    {
+      contract: rollup,
+      method: "getLastHeight",
+      args: [],
+    },
+    { refresh: 2 }
+  );
 
   useEffect(() => {
     if (res) {
@@ -74,7 +77,6 @@ export const useByFromHeight = (height: number, size: number) => {
     if (res) {
       const { error, value } = res;
       if (error) {
-        console.log("error", error);
         setBlocksHeaderError(error.message);
       } else {
         if (value && value.length) {
@@ -118,8 +120,8 @@ export const useByHeight = (height: number | Falsy) => {
         method: "getByHeight",
         args: [height],
       },
-      { refresh: "everyBlock" }
-    ) ?? {};
+      { refresh: "never" }
+    ) ?? null;
 
   useEffect(() => {
     if (res) {
@@ -156,12 +158,40 @@ export const useByHeight = (height: number | Falsy) => {
  *   blockHeader.CID
  * ]
  */
-export const useByHash = (hash: string) => {
-  return useCall({
-    contract: rollup,
-    method: "getByHash",
-    args: [hash],
-  });
+export const useByHash = (hash: string | Falsy) => {
+  const [blockHeader, setBlockHeader] = useState<BlockHeader>(undefined);
+  const [blockHeaderError, setBlockHeaderError] = useState(null);
+
+  const res: any =
+    useCall(
+      hash && {
+        contract: rollup,
+        method: "getByHash",
+        args: [hash],
+      },
+      { refresh: "never" }
+    ) ?? null;
+
+  useEffect(() => {
+    if (res) {
+      const { error, value } = res;
+      if (error) {
+        setBlockHeaderError(error.message);
+      } else {
+        if (value && value.length) {
+          setBlockHeaderError(null);
+          if (
+            !blockHeader ||
+            blockHeader.height !== BigNumber.from(value[0]).toString()
+          ) {
+            setBlockHeader(createTx(value));
+          }
+        }
+      }
+    }
+  }, [res]);
+
+  return { blockHeader, blockHeaderError };
 };
 
 /**
@@ -177,12 +207,15 @@ export const useSize = () => {
 };
 
 export const createTx = (tx: any[]): BlockHeader => {
-  const header = new BlockHeader();
-  header.height = tx[0].toString();
-  header.curBlock = tx[1];
-  header.prevBlock = tx[2];
-  header.merkleRoot = tx[3];
-  header.timestamp = tx[4].toNumber();
-  header.CID = tx[5];
-  return header;
+  if (tx && tx.length) {
+    const header = new BlockHeader();
+    header.height = tx[0].toString();
+    header.curBlock = tx[1];
+    header.prevBlock = tx[2];
+    header.merkleRoot = tx[3];
+    header.timestamp = tx[4].toNumber();
+    header.CID = tx[5];
+    return header;
+  }
+  return null;
 };

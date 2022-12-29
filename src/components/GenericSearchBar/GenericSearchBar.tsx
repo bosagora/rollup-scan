@@ -9,21 +9,8 @@ import { useNavigate } from "react-router-dom";
 export interface GenericSearchBarProps {
   children?: ReactNode;
   onClick?: () => void;
-  history?: any;
-  searchedDataGet: Function;
-  searchedData: {
-    searchType: "";
-    available: false;
-    details: {};
-  };
 }
-const GenericSearchBar: React.FC<GenericSearchBarProps> = ({
-  children,
-  onClick,
-  history,
-  searchedDataGet,
-  searchedData,
-}) => {
+const GenericSearchBar: React.FC<GenericSearchBarProps> = ({ onClick }) => {
   let btn: any;
   const { t } = useTranslation();
   const [search, setSearch] = useState("");
@@ -44,6 +31,7 @@ const GenericSearchBar: React.FC<GenericSearchBarProps> = ({
       if (reg.test(search)) {
         navigate(`${RouterPathEnum.BLOCKS_DETAILS}/${search}`);
       } else if (matchBlockHash) {
+        navigate(`${RouterPathEnum.BLOCKS_DETAILS}/${search}`);
       } else {
         showError(t("searchMsg"));
       }
