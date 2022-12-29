@@ -3,7 +3,6 @@ import { Col, Container, Row } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { RouterPathEnum } from "global/routes/RouterPathEnum";
 import { pageChange } from "store/pagination/thunks";
-import { searchDataUpdater } from "store/header/thunks";
 import moment from "moment";
 import { useTranslation } from "react-i18next";
 import CopyAddressClipboard from "components/CopyAddressClipboard/CopyAddressClipboard";
@@ -22,13 +21,11 @@ const Blocks: React.FC = (props: any) => {
 
   const [pageCount, setPageCount] = useState(1);
   const [blocksData, setBlocksData] = useState<any>([]);
-  // const [blocks, setBlocks] = useState<any>([]);
   const [loading, setLoading] = useState(false);
 
   const { t } = useTranslation();
   //redux states
   const blockHeight = useSelector((state: any) => state.header.blockHeight);
-  const searchedData = useSelector((state: any) => state.header.searchedData);
   const pageNumber = useSelector((state: any) => state.pagination.pageNumber);
 
   const [currentPage, setCurrentPage] = useState(pageNumber);
@@ -74,13 +71,7 @@ const Blocks: React.FC = (props: any) => {
               <div className="top-header2">
                 <div className="left"></div>
                 <div className="right">
-                  <GenericSearchBar
-                    history={props.history}
-                    searchedDataGet={(searchID: string) =>
-                      dispatch(searchDataUpdater(searchID))
-                    }
-                    searchedData={searchedData}
-                  />
+                  <GenericSearchBar />
                 </div>
               </div>
             </Col>

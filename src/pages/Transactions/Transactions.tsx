@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Col, Container, Row } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
 // import { ReactSVG } from 'react-svg'
-import { searchDataUpdater } from "store/header/thunks";
 import { RouterPathEnum } from "global/routes/RouterPathEnum";
 import { pageChange } from "store/pagination/thunks";
 import { pageSizeChange } from "store/paginationSize/thunks";
@@ -42,7 +41,6 @@ const Transactions: React.FC = (props: any) => {
     // [page, setpage] = useState('10'),
     [pageCount] = useState(0),
     [loading, setLoading] = useState(false),
-    searchedData = useSelector((state: any) => state.header.searchedData),
     // const output = useSelector((state: any) => state.output.output);
     pagination = useSelector((state: any) => state.pagination),
     // paginationSize = useSelector((state: any) => state.paginationSize),
@@ -50,9 +48,6 @@ const Transactions: React.FC = (props: any) => {
     [transactionsData] = useState<any>([]);
 
   const { t } = useTranslation();
-  // useEffect(() => {
-  //   getlatestTransaction()
-  // }, [])
 
   useEffect(() => {
     getlatestTransaction();
@@ -126,13 +121,7 @@ const Transactions: React.FC = (props: any) => {
               <div className="top-header2">
                 <div className="left"></div>
                 <div className="right">
-                  <GenericSearchBar
-                    history={props.history}
-                    searchedDataGet={(searchid: any) =>
-                      dispatch(searchDataUpdater(searchid))
-                    }
-                    searchedData={searchedData}
-                  />
+                  <GenericSearchBar />
                 </div>
               </div>
             </Col>

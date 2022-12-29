@@ -29,6 +29,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onClick }) => {
       if (reg.test(search)) {
         navigate(`${RouterPathEnum.BLOCKS_DETAILS}/${search}`);
       } else if (matchBlockHash) {
+        navigate(`${RouterPathEnum.BLOCKS_DETAILS}/${search}`);
       } else {
         showError(t("searchMsg"));
       }
