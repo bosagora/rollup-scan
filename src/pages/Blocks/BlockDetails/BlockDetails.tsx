@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import moment from "moment";
 import CopyAddressClipboard from "components/CopyAddressClipboard/CopyAddressClipboard";
 import Loader from "components/Loader/Loader";
-import request from "../../../global/api/request";
+import request, { IPSF_Url } from "../../../global/api/request";
 import PageHelmet from "../../../components/PageHelmet/PageHelmet";
 import GenericSearchBar from "../../../components/GenericSearchBar/GenericSearchBar";
 import Table from "../../../components/Table/Table";
@@ -27,7 +27,7 @@ const BlockDetails: React.FC = (props: any) => {
   // All states for current screen
   const { t } = useTranslation();
   const { height } = useParams();
-  const navigator = useNavigate();
+  const navigate = useNavigate();
 
   const [showRecord, setShowRecords] = useState<any>(10);
   const [currentPage, setCurrentPage] = useState(1);
@@ -72,7 +72,7 @@ const BlockDetails: React.FC = (props: any) => {
 
   useEffect(() => {
     if (_.isEmpty(height) && blockHeight) {
-      navigator(`${RouterPathEnum.BLOCKS_DETAILS}/${blockHeight}`);
+      navigate(`${RouterPathEnum.BLOCKS_DETAILS}/${blockHeight}`);
     } else {
       setCurrentHeight(Number(height));
       setSearchType(SEARCH_TYPE.HEIGHT);
@@ -90,14 +90,14 @@ const BlockDetails: React.FC = (props: any) => {
       }
     } else {
       if (blockHeight)
-        navigator(`${RouterPathEnum.BLOCKS_DETAILS}/${blockHeight}`);
+        navigate(`${RouterPathEnum.BLOCKS_DETAILS}/${blockHeight}`);
     }
   }, [height]);
 
   useEffect(() => {
     if (!blockHeight) return;
     if (_.isEmpty(height)) {
-      navigator(`${RouterPathEnum.BLOCKS_DETAILS}/${blockHeight}`);
+      navigate(`${RouterPathEnum.BLOCKS_DETAILS}/${blockHeight}`);
     }
   }, [blockHeight]);
 
@@ -161,6 +161,10 @@ const BlockDetails: React.FC = (props: any) => {
     );
   };
 
+  const handlerOnClickBlock = (hash: string) => {
+    navigate(`${RouterPathEnum.BLOCKS_DETAILS}/${hash}`);
+  };
+
   return (
     <div className="page-container">
       <div id="block-details">
@@ -221,7 +225,14 @@ const BlockDetails: React.FC = (props: any) => {
                       <div className="hash-copy copy-address">
                         {allData?.prevBlock && (
                           <>
-                            {allData.prevBlock}
+                            <div
+                              onClick={() =>
+                                handlerOnClickBlock(allData.prevBlock)
+                              }
+                              className="link-color address"
+                            >
+                              {allData.prevBlock}
+                            </div>
                             <CopyAddressClipboard
                               id="allDataMerkleRoot"
                               text={allData.prevBlock}
@@ -251,17 +262,20 @@ const BlockDetails: React.FC = (props: any) => {
                     <p>{t("CID")}</p>
                     <div className="values">
                       <div className="hash-copy copy-address">
-                        {allData.CID ? (
+                        {allData.CID && (
                           <>
-                            <>{allData.CID && <>{allData.CID}</>}</>
+                            <a
+                              target="_blank"
+                              href={IPSF_Url + allData.CID}
+                              rel="noreferrer"
+                            >
+                              {IPSF_Url + allData.CID}
+                            </a>
                             <CopyAddressClipboard
                               id={allData.CID}
-                              text={allData.CID}
+                              text={IPSF_Url + allData.CID}
                             />
                           </>
-                        ) : (
-                          ""
-                          // <Loader />
                         )}
                       </div>
                     </div>
