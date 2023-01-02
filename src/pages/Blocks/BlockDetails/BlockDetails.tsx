@@ -18,6 +18,7 @@ import TransactionDetails from "./TransactionDetails";
 import { useNavigate, useParams } from "react-router-dom";
 import { RouterPathEnum } from "../../../global/routes/RouterPathEnum";
 import { BlockHeader } from "../../../global/Types";
+import FadeIn from "../../../components/Animation/FadeIn/FadeIn";
 
 enum SEARCH_TYPE {
   HEIGHT,
@@ -71,7 +72,7 @@ const BlockDetails: React.FC = (props: any) => {
   }, [blockHeaderByHeight]);
 
   useEffect(() => {
-    if (_.isEmpty(height) && blockHeight) {
+    if (_.isNil(height) && blockHeight) {
       navigate(`${RouterPathEnum.BLOCKS_DETAILS}/${blockHeight}`);
     } else {
       setCurrentHeight(Number(height));
@@ -84,7 +85,7 @@ const BlockDetails: React.FC = (props: any) => {
       if (height.match("0x")) {
         setCurrentHash(height);
         setSearchType(SEARCH_TYPE.HASH);
-      } else if (Number(height)) {
+      } else if (/^\d+$/.test(height)) {
         setCurrentHeight(Number(height));
         setSearchType(SEARCH_TYPE.HEIGHT);
       }
@@ -303,12 +304,14 @@ const BlockDetails: React.FC = (props: any) => {
                 </div>
 
                 {selectTx ? (
-                  <TransactionDetails
-                    tx={selectTx}
-                    goBack={() => {
-                      setSelectTx(null);
-                    }}
-                  />
+                  <FadeIn>
+                    <TransactionDetails
+                      tx={selectTx}
+                      goBack={() => {
+                        setSelectTx(null);
+                      }}
+                    />
+                  </FadeIn>
                 ) : (
                   <div>
                     <Row>
