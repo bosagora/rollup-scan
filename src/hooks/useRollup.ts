@@ -34,9 +34,11 @@ export const useLastHeight = () => {
       } else {
         if (value && value.length) {
           setHeightError(null);
-          const h = BigNumber.from(value[0]).toNumber();
-          if (h !== height) {
-            setHeight(h);
+          const h = BigNumber.from(value[0]);
+          if (h.toString() !== uint64max) {
+            if (h.toNumber() !== height) {
+              setHeight(h.toNumber());
+            }
           }
         }
       }
@@ -219,3 +221,4 @@ export const createTx = (tx: any[]): BlockHeader => {
   }
   return null;
 };
+export const uint64max = "18446744073709551615";
